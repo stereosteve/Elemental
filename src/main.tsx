@@ -7,6 +7,8 @@ import { UserHome } from './routes/user-home'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClient } from './client'
 import { GlobalLayout } from './layouts/global-layout'
+import { UserPlaylists } from './routes/user-playlists'
+import UserReposts from './routes/user-reposts'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -19,8 +21,11 @@ createRoot(document.getElementById('root')!).render(
 
             <Route path=":handle">
               <Route index element={<UserHome />} />
-              <Route path="reposts" element={<h1>User Reposts</h1>} />
+              <Route path="playlists" element={<UserPlaylists />} />
+              <Route path="reposts" element={<UserReposts />} />
             </Route>
+
+            <Route path="*" element={<h1>Not found...</h1>} />
           </Route>
         </Routes>
       </BrowserRouter>

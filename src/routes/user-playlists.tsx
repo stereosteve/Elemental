@@ -1,4 +1,4 @@
-import { TrackTile } from '@/components/track-tile'
+import { PlaylistTile } from '@/components/playlist-tile'
 import UserLayout from '@/layouts/user-layout'
 import { DJContext } from '@/state/dj'
 import { PlaylistRow } from '@/types/playlist-row'
@@ -13,7 +13,7 @@ type UserResp = {
   playlists: PlaylistRow[]
 }
 
-export function UserHome() {
+export function UserPlaylists() {
   const { handle } = useParams()
   const { data } = useQuery<UserResp>({
     queryKey: [`/api/users/${handle}`],
@@ -22,17 +22,17 @@ export function UserHome() {
   // todo: loading / error state
   if (!data) return null
 
-  const { user, tracks } = data
+  const { user, playlists } = data
 
   const djc: DJContext = {
     path: location.pathname,
-    items: tracks,
+    items: playlists,
   }
 
   return (
     <UserLayout user={user} container>
-      {tracks.map((track) => (
-        <TrackTile key={track.id} track={track} djContext={djc} />
+      {playlists.map((playlist) => (
+        <PlaylistTile key={playlist.id} playlist={playlist} djContext={djc} />
       ))}
     </UserLayout>
   )
