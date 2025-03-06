@@ -1,3 +1,4 @@
+import { queryClient } from '@/client'
 import { createStore, useStore } from 'zustand'
 import { persist } from 'zustand/middleware'
 
@@ -10,7 +11,10 @@ export const meStore = createStore<MeStore>()(
   persist(
     (set) => {
       return {
-        become: (myId) => set({ myId }),
+        become: (myId) => {
+          set({ myId })
+          queryClient.invalidateQueries()
+        },
       }
     },
     {

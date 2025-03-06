@@ -27,7 +27,6 @@ app.get('/api/users', async (c) => {
 
 app.get('/api/users/:handle', async (c) => {
   const myId = parseInt(c.req.header('x-my-id') || c.req.query('myId') || '')
-
   const handle = c.req.param('handle')
   const users = await queryUsers({ handle })
   const user = users[0]
@@ -64,7 +63,6 @@ app.get('/api/users/:handle/reposts', async (c) => {
   if (!user) return c.text('not found', 404)
 
   const reposts = await userReposts(user.id)
-  // await new Promise((r) => setTimeout(r, 5000))
   return c.json({
     user,
     reposts,

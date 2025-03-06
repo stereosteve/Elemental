@@ -1,0 +1,20 @@
+.nav-rail {
+  @apply  fixed top-0 left-0 h-full w-16 border-r;
+
+  a.active {
+    @apply bg-amber-200 border-r-2 border-amber-400;
+  }
+}
+
+
+.user-layout {
+  a {
+    @apply p-2 rounded-md;
+  }
+  a.active {
+    @apply bg-secondary;
+  }
+}
+
+
+

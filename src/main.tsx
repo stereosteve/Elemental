@@ -13,6 +13,7 @@ import ExploreGenres from './routes/explore-genres'
 import Feed from './routes/feed'
 import { UserComments } from './routes/user-comments'
 import { TrackDetail } from './routes/track-detail'
+import UserLayout from './layouts/user-layout'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -26,11 +27,13 @@ createRoot(document.getElementById('root')!).render(
             <Route path="/explore/genres" element={<ExploreGenres />} />
 
             <Route path=":handle">
-              <Route index element={<UserHome />} />
-              <Route path="playlists" element={<UserPlaylists />} />
-              <Route path="reposts" element={<UserReposts />} />
-              <Route path="feed" element={<UserReposts />} />
-              <Route path="comments" element={<UserComments />} />
+              <Route element={<UserLayout />}>
+                <Route index element={<UserHome />} />
+                <Route path="playlists" element={<UserPlaylists />} />
+                <Route path="reposts" element={<UserReposts />} />
+                <Route path="feed" element={<UserReposts />} />
+                <Route path="comments" element={<UserComments />} />
+              </Route>
 
               <Route path=":trackSlug/:trackId" element={<TrackDetail />} />
             </Route>

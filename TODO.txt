@@ -1,0 +1,5 @@
+- don't return tracks / playlists with user request?
+- support myId on all requests
+- personalize more stuff... isFollowed, followsMe, isSaved, isReposted, etc.
+- saves view
+- play history...

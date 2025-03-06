@@ -1,7 +1,6 @@
 import { CurrentUser } from '@/components/current-user'
 import { UserSearch } from '@/components/user-search'
 import { useMe } from '@/state/me'
-import { Link } from 'react-router'
 
 export function Home() {
   const me = useMe()
@@ -18,11 +17,6 @@ export function Home() {
       <br />
       <CurrentUser />
       <br />
-
-      <div className="flex flex-col gap-2">
-        <Link to="/feed">Feed</Link>
-        <Link to="/explore/genres">Genres</Link>
-      </div>
     </div>
   )
 }

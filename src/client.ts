@@ -1,4 +1,5 @@
 import { QueryClient } from '@tanstack/react-query'
+import { meStore } from './state/me'
 // import { meStore } from './state/me'
 
 // probably some middleware can add myId to cache key... and header
@@ -8,12 +9,12 @@ export const queryClient = new QueryClient({
     queries: {
       queryFn: async ({ queryKey }) => {
         const u = queryKey[0] as string
-        // const { myId } = meStore.getState()
-        // console.log(u, { myId })
+        const { myId } = meStore.getState()
+        console.log(u, { myId })
         const resp = await fetch(u, {
-          // headers: {
-          //   'x-my-id': `${myId}`,
-          // },
+          headers: {
+            'x-my-id': `${myId}`,
+          },
         })
         if (resp.ok) {
           return resp.json()

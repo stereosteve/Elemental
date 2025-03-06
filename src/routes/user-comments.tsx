@@ -1,5 +1,4 @@
 import { TrackTile } from '@/components/track-tile'
-import UserLayout from '@/layouts/user-layout'
 import { DJContext } from '@/state/dj'
 import { FeedStub } from '@/types/feed-stub'
 import { UserRow } from '@/types/user-row'
@@ -19,7 +18,7 @@ export function UserComments() {
 
   if (!data) return null
 
-  const { user, comments } = data
+  const { comments } = data
   const items = comments.map((c) => c.track || c.playlist!)
   const djContext: DJContext = {
     path: location.pathname,
@@ -27,7 +26,7 @@ export function UserComments() {
   }
 
   return (
-    <UserLayout user={user} container>
+    <div>
       {comments.map((stub, idx) => (
         <div className="p-4" key={idx}>
           <div className="text-xl p-4 bg-accent rounded-md">{stub.text!}</div>
@@ -42,6 +41,6 @@ export function UserComments() {
           </div>
         </div>
       ))}
-    </UserLayout>
+    </div>
   )
 }

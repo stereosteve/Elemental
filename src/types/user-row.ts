@@ -8,6 +8,9 @@ export type UserRow = {
   createdAt: string
 
   trackCount: number
+  playlistCount: number
+  albumCount: number
+  repostCount: number
   followerCount: number
   followingCount: number
 }

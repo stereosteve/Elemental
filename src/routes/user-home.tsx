@@ -1,5 +1,4 @@
 import { TrackTile } from '@/components/track-tile'
-import UserLayout from '@/layouts/user-layout'
 import { DJContext } from '@/state/dj'
 import { PlaylistRow } from '@/types/playlist-row'
 import { TrackRow } from '@/types/track-row'
@@ -21,7 +20,7 @@ export function UserHome() {
 
   if (!data) return null
 
-  const { user, tracks } = data
+  const { tracks } = data
 
   const djc: DJContext = {
     path: location.pathname,
@@ -29,10 +28,10 @@ export function UserHome() {
   }
 
   return (
-    <UserLayout user={user} container>
+    <div className="container">
       {tracks.map((track) => (
         <TrackTile key={track.id} track={track} djContext={djc} />
       ))}
-    </UserLayout>
+    </div>
   )
 }

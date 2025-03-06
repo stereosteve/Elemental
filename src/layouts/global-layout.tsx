@@ -1,7 +1,6 @@
 import { Player } from '@/components/player'
 import { AudioWaveformIcon, HomeIcon, Loader2Icon, RssIcon } from 'lucide-react'
 import { NavLink, Outlet } from 'react-router'
-import './global-layout.css'
 import { useIsFetching } from '@tanstack/react-query'
 
 const navItems = [

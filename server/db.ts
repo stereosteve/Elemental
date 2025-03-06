@@ -46,6 +46,9 @@ export async function queryUsers({ handle, ids, q, limit }: UserQuery) {
     users.created_at as "createdAt",
 
     track_count as "trackCount",
+    playlist_count as "playlistCount",
+    album_count as "albumCount",
+    repost_count as "repostCount",
     follower_count as "followerCount",
     following_count as "followingCount"
 
@@ -348,6 +351,7 @@ export async function feed(myId: number, before?: string) {
     follow_set as (
       select followee_user_id as user_id from follows
       where follower_user_id = ${myId}
+        and is_delete = false
     ),
     history as (
 

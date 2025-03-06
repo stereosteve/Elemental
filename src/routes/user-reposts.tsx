@@ -1,16 +1,5 @@
-/*
-
-const u = `/api/users/${params.handle}/reposts`
-  const res = await simpleFetch(u)
-  return res as {
-    user: UserRow
-    reposts: FeedStub[]
-  }
-    */
-
 import { PlaylistTile } from '@/components/playlist-tile'
 import { TrackTile } from '@/components/track-tile'
-import UserLayout from '@/layouts/user-layout'
 import { DJContext } from '@/state/dj'
 import { FeedStub } from '@/types/feed-stub'
 import { UserRow } from '@/types/user-row'
@@ -29,7 +18,7 @@ export default function UserReposts() {
   })
 
   if (!data) return null
-  const { user, reposts } = data
+  const { reposts } = data
 
   const djContext: DJContext = {
     path: location.pathname,
@@ -37,7 +26,7 @@ export default function UserReposts() {
   }
 
   return (
-    <UserLayout user={user} container>
+    <div>
       {reposts.map((stub, idx) => (
         <div key={idx} className="p-4">
           {stub.track && <TrackTile track={stub.track} djContext={djContext} />}
@@ -46,6 +35,6 @@ export default function UserReposts() {
           )}
         </div>
       ))}
-    </UserLayout>
+    </div>
   )
 }
