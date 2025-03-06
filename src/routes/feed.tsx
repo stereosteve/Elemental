@@ -7,13 +7,12 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
 import { useLocation } from 'react-router'
 import { Loader2Icon } from 'lucide-react'
+import { useMe } from '@/state/me'
 // import { useMe } from '@/state/me'
 
 export default function Feed() {
   const location = useLocation()
-  // const { myId } = useMe()
-
-  const myId = 1
+  const { myId } = useMe()
 
   const { data, fetchNextPage, isFetchingNextPage, isLoading, isFetching } =
     useInfiniteQuery({
@@ -28,6 +27,10 @@ export default function Feed() {
       },
       enabled: !!myId,
     })
+
+  if (!myId) {
+    return <div className="p-24">Log In to see feed</div>
+  }
 
   const feed = data?.pages.flat() || []
 

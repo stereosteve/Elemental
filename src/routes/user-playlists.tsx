@@ -19,7 +19,6 @@ export function UserPlaylists() {
     queryKey: [`/api/users/${handle}`],
   })
 
-  // todo: loading / error state
   if (!data) return null
 
   const { user, playlists } = data

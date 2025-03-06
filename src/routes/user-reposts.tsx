@@ -28,7 +28,7 @@ export default function UserReposts() {
     queryKey: [`/api/users/${handle}/reposts`],
   })
 
-  if (!data) return <div>todo</div>
+  if (!data) return null
   const { user, reposts } = data
 
   const djContext: DJContext = {

@@ -11,6 +11,8 @@ import { UserPlaylists } from './routes/user-playlists'
 import UserReposts from './routes/user-reposts'
 import ExploreGenres from './routes/explore-genres'
 import Feed from './routes/feed'
+import { UserComments } from './routes/user-comments'
+import { TrackDetail } from './routes/track-detail'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -28,6 +30,9 @@ createRoot(document.getElementById('root')!).render(
               <Route path="playlists" element={<UserPlaylists />} />
               <Route path="reposts" element={<UserReposts />} />
               <Route path="feed" element={<UserReposts />} />
+              <Route path="comments" element={<UserComments />} />
+
+              <Route path=":trackSlug/:trackId" element={<TrackDetail />} />
             </Route>
 
             <Route path="*" element={<h1>Not found...</h1>} />

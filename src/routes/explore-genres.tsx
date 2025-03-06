@@ -10,7 +10,7 @@ type Resp = {
 
 export default function ExploreGenres() {
   const { data } = useQuery<Resp>({ queryKey: [`/api/explore/genres`] })
-  if (!data) return <div>todo</div>
+  if (!data) return null
   const genres = data
   return (
     <div className="overflow-x-scroll">
