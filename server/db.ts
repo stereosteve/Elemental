@@ -28,11 +28,13 @@ export const sql = postgres(process.env.discoveryDbUrl || '', {
 // USER
 //
 type UserQuery = {
+  q?: string
   handle?: string
   ids?: number[] | string[]
+  limit?: string
 }
 
-export async function queryUsers({ handle, ids }: UserQuery) {
+export async function queryUsers({ handle, ids, q, limit }: UserQuery) {
   const users: UserRow[] = await sql`
   select
     'user' as "type",
@@ -53,7 +55,9 @@ export async function queryUsers({ handle, ids }: UserQuery) {
     1=1
     ${ids ? sql`AND user_id in ${sql(ids)}` : sql``}
     ${handle ? sql`AND handle_lc = ${handle.toLowerCase()}` : sql``}
+    ${q ? sql`AND handle_lc like ${q.toLowerCase()} || '%'` : sql``}
   order by follower_count desc
+  ${limit ? sql`LIMIT ${limit}` : sql``}
   ;
   `
   return users

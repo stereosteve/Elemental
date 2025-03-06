@@ -18,8 +18,10 @@ const app = new Hono()
 app.use(logger())
 
 app.get('/api/users', async (c) => {
-  const ids = c.req.queries('id') || []
-  const users = await queryUsers({ ids })
+  const ids = c.req.queries('id')
+  const q = c.req.query('q')
+  const limit = c.req.query('limit') || '100'
+  const users = await queryUsers({ ids, q, limit })
   return c.json(users)
 })
 
