@@ -44,15 +44,13 @@ export function TrackTile({ track, djContext, imgSize, rank }: TrackTileProps) {
       <div className="flex flex-col flex-grow">
         <div className="text-xl font-bold">
           <Link
-            to={`/user/${track.user.handle}/${slugify(track.title)}/${
-              track.id
-            }`}
+            to={`/${track.user.handle}/${slugify(track.title)}/${track.id}`}
           >
             {track.title}
           </Link>
         </div>
         <div className="flex gap-2">
-          <Link to={`/user/${track.user.handle}`}>{track.user.name}</Link>
+          <Link to={`/${track.user.handle}`}>{track.user.name}</Link>
         </div>
       </div>
 

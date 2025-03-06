@@ -38,6 +38,7 @@ interface DJState {
 export const useDJ = create<DJState>()((set, get) => ({
   play: (track, djContext) =>
     set((state) => {
+      console.log('play', track)
       return {
         track,
         playlist: undefined,
@@ -47,6 +48,7 @@ export const useDJ = create<DJState>()((set, get) => ({
 
   playPlaylist: (playlist, track, djContext) =>
     set((state) => {
+      console.log('play playlist', playlist, track)
       return {
         playlist,
         track,

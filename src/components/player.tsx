@@ -32,7 +32,7 @@ export function Player() {
           <div>
             <div className="font-bold">{track.title}</div>
             <div>
-              <Link to={`/user/${track.user.handle}`}>{track.user.name}</Link>
+              <Link to={`/${track.user.handle}`}>{track.user.name}</Link>
             </div>
           </div>
 
@@ -74,6 +74,7 @@ export function Player() {
                         </div>
                         {item.tracks.map((track, idx) => (
                           <div
+                            key={idx}
                             onClick={() => dj.playPlaylist(item, track)}
                             className={clsx(
                               'ml-2',

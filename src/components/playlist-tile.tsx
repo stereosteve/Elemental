@@ -27,9 +27,7 @@ export function PlaylistTile({ playlist, djContext }: PlaylistTileProps) {
         <div>
           <div className="text-2xl font-black">{playlist.name}</div>
           <div className="flex gap-2">
-            <Link to={`/user/${playlist.user.handle}`}>
-              {playlist.user.name}
-            </Link>
+            <Link to={`/${playlist.user.handle}`}>{playlist.user.name}</Link>
             <div>{new Date(playlist.createdAt).toDateString()}</div>
           </div>
         </div>
@@ -55,7 +53,7 @@ export function PlaylistTile({ playlist, djContext }: PlaylistTileProps) {
                 {track.title}
               </div>
               <div className="text-muted-foreground">
-                <Link to={`/user/${track.user.handle}`}>{track.user.name}</Link>
+                <Link to={`/${track.user.handle}`}>{track.user.name}</Link>
               </div>
             </div>
           </div>
