@@ -10,3 +10,36 @@ services:
     #   - .:/app
     # environment:
     #   - ENV=development
+
+  cloudflare-tunnel:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflare-tunnel
+    hostname: cloudflare-tunnel
+    restart: unless-stopped
+
+    # Logging configuration for Cloudflare Tunnel container
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "10"
+
+    network_mode: "host"
+    command: tunnel run da1b9230-b1aa-465b-a373-87a994ecab1e
+
+    # Volume configuration for time synchronization and hosts file persistence
+    volumes:
+      - /etc/localtime:/etc/localtime:ro              # Synchronize time with the host
+
+    # Environment variables for Cloudflare Tunnel
+    environment:
+      - "TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}"
+
+    # Health check configuration to verify Cloudflare Tunnel readiness
+    healthcheck:
+      test: ["CMD", "cloudflared", "--version"]       # Check if cloudflared version command works
+      interval: 30s                                   # Time between health check attempts
+      timeout: 10s                                    # Time to wait for a response
+      retries: 3                                      # Number of retries before marking as unhealthy
+      start_period: 10s                               # Delay before health checks begin
+

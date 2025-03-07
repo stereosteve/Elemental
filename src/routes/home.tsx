@@ -7,7 +7,6 @@ export function Home() {
   return (
     <div className="p-24">
       <PageTitle title="Home" />
-
       <UserSearch
         onSelect={(user) => {
           console.log('howdy', user)

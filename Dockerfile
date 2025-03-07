@@ -16,7 +16,8 @@ RUN pnpm install
 COPY . .
 
 
-RUN ["pnpm", "build"]
+# assume dist dir is build aot
+# RUN ["pnpm", "build"]
 
 
 # Expose the port the app runs on
