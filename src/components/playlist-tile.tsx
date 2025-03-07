@@ -6,6 +6,7 @@ import { CidImage } from './cid-image'
 import { RepostButton } from './repost-button'
 import { SaveButton } from './save-button'
 import { useMe } from '@/state/me'
+import { urlFor } from '@/lib/urlFor'
 
 type PlaylistTileProps = {
   playlist: PlaylistRow
@@ -31,7 +32,7 @@ export function PlaylistTile({ playlist, djContext }: PlaylistTileProps) {
         <div>
           <div className="text-2xl font-black">{playlist.name}</div>
           <div className="flex gap-2">
-            <Link to={`/${playlist.user.handle}`}>{playlist.user.name}</Link>
+            <Link to={urlFor.user(playlist.user)}>{playlist.user.name}</Link>
             <div>{new Date(playlist.createdAt).toDateString()}</div>
             {playlist.user.id != myId && (
               <div>
@@ -61,7 +62,7 @@ export function PlaylistTile({ playlist, djContext }: PlaylistTileProps) {
                 {track.title}
               </div>
               <div className="text-muted-foreground">
-                <Link to={`/${track.user.handle}`}>{track.user.name}</Link>
+                <Link to={urlFor.user(track.user)}>{track.user.name}</Link>
               </div>
             </div>
           </div>

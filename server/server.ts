@@ -10,7 +10,8 @@ import { genreArtists } from './db/top-genre-artists'
 import { fauxTrending } from './db/top-tracks'
 import { userReposts } from './db/user-reposts'
 import { userLibrary } from './db/user-library'
-// import { sql } from './db/db'
+import { sql } from './db/db'
+import { queryMutuals } from './db/query-mutuals'
 
 const app = new Hono()
 
@@ -31,21 +32,31 @@ app.get('/api/users/:handle', async (c) => {
   const user = users[0]
   if (!user) return c.text('not found', 404)
 
-  const [tracks, playlists] = await Promise.all([
-    queryTracks({ myId, userId: user.id }),
-    queryPlaylists({ userId: user.id }),
-  ])
-  return c.json({ user, playlists, tracks })
+  // const [tracks, playlists] = await Promise.all([
+  //   queryTracks({ myId, userId: user.id }),
+  //   queryPlaylists({ userId: user.id }),
+  // ])
+  return c.json({ user })
+})
+
+app.get('/api/users/:handle/tracks', async (c) => {
+  const myId = getMyId(c)
+  const userId = await resolveUserId(c)
+  const tracks = await queryTracks({ myId, userId })
+  return c.json(tracks)
+})
+
+app.get('/api/users/:handle/playlists', async (c) => {
+  const myId = getMyId(c)
+  const userId = await resolveUserId(c)
+  const playlists = await queryPlaylists({ myId, userId })
+  return c.json(playlists)
 })
 
 app.get('/api/users/:handle/comments', async (c) => {
-  const handle = c.req.param('handle')
-  const users = await queryUsers({ handle })
-  const user = users[0]
-  if (!user) return c.text('not found', 404)
-
-  const comments = await queryComments({ userId: user.id })
-  return c.json({ user, comments })
+  const userId = await resolveUserId(c)
+  const comments = await queryComments({ userId })
+  return c.json({ comments })
 })
 
 app.get('/api/feed/:uid', async (c) => {
@@ -57,19 +68,21 @@ app.get('/api/feed/:uid', async (c) => {
 
 app.get('/api/users/:handle/reposts', async (c) => {
   const myId = getMyId(c)
-  const handle = c.req.param('handle')
-  const users = await queryUsers({ handle })
-  const user = users[0]
-  if (!user) return c.text('not found', 404)
-
+  const userId = await resolveUserId(c)
   const reposts = await userReposts({
-    userId: user.id,
+    userId,
     myId,
   })
   return c.json({
-    user,
     reposts,
   })
+})
+
+app.get('/api/users/:handle/mutuals', async (c) => {
+  const myId = getMyId(c)
+  const userId = await resolveUserId(c)
+  const mutuals = await queryMutuals({ myId, userId })
+  return c.json(mutuals)
 })
 
 app.get('/api/my/library', async (c) => {
@@ -114,17 +127,17 @@ function getMyId(c: Context) {
   return myId
 }
 
-// const resolveUserCache: Record<string, number> = {}
-// async function resolveUserId(c: Context) {
-//   const handle = c.req.param('handle')
-//   if (resolveUserCache[handle]) return resolveUserCache[handle]
-//   const users =
-//     await sql`select user_id from users where handle_lc = ${handle.toLowerCase()}`
-//   if (!users.length) return
-//   const { user_id } = users[0]
-//   resolveUserCache[handle] = user_id
-//   return user_id
-// }
+const _resolveUserCache: Record<string, number> = {}
+async function resolveUserId(c: Context) {
+  const handle = c.req.param('handle')
+  if (_resolveUserCache[handle]) return _resolveUserCache[handle]
+  const users =
+    await sql`select user_id from users where handle_lc = ${handle.toLowerCase()}`
+  if (!users.length) return
+  const { user_id } = users[0]
+  _resolveUserCache[handle] = user_id
+  return user_id
+}
 
 serve({
   fetch: app.fetch,

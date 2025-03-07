@@ -6,7 +6,7 @@ type Args = {
   isTrack: boolean
 }
 
-export async function myReposts({ myId, ids, isTrack }: Args) {
+export async function queryIsReposted({ myId, ids, isTrack }: Args) {
   const myReposts = await sql`
     select repost_item_id
     from reposts

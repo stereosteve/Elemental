@@ -1,4 +1,3 @@
-import { slugify } from '@/lib/slugify'
 import { useDJ, type DJContext } from '@/state/dj'
 import type { TrackRow } from '@/types/track-row'
 import clsx from 'clsx'
@@ -7,6 +6,7 @@ import { CidImage } from './cid-image'
 import { RepostButton } from './repost-button'
 import { SaveButton } from './save-button'
 import { useMe } from '@/state/me'
+import { urlFor } from '@/lib/urlFor'
 
 type TrackTileProps = {
   track: TrackRow
@@ -44,14 +44,10 @@ export function TrackTile({ track, djContext, imgSize, rank }: TrackTileProps) {
 
       <div className="flex flex-col flex-grow">
         <div className="text-xl font-bold">
-          <Link
-            to={`/${track.user.handle}/${slugify(track.title)}/${track.id}`}
-          >
-            {track.title}
-          </Link>
+          <Link to={urlFor.track(track)}>{track.title}</Link>
         </div>
         <div className="flex gap-2">
-          <Link to={`/${track.user.handle}`}>{track.user.name}</Link>
+          <Link to={urlFor.user(track.user)}>{track.user.name}</Link>
         </div>
       </div>
 
@@ -69,7 +65,7 @@ export function TrackTile({ track, djContext, imgSize, rank }: TrackTileProps) {
               img={user.img}
               size={32}
               className="rounded-full ml-[-8px]"
-              onClick={() => navigate(`/${user.handle}`)}
+              onClick={() => navigate(urlFor.user(user))}
             />
           ))}
         </div>

@@ -2,8 +2,8 @@ import { PlaylistRow } from '@/types/playlist-row'
 import { sql } from './db'
 import { queryTracks } from './query-tracks'
 import { keyBy } from '@/lib/keyBy'
-import { myReposts } from './my-reposts'
-import { mySaves } from './my-saves'
+import { queryIsReposted } from './query-is-reposted'
+import { queryIsSaved } from './query-is-saved'
 
 type PlaylistQuery = {
   ids?: number[]
@@ -58,8 +58,8 @@ export async function queryPlaylists({ ids, userId, myId }: PlaylistQuery) {
     const ids = playlists.map((p) => p.id)
 
     const [saveSet, repostSet] = await Promise.all([
-      mySaves({ myId, ids, isTrack: false }),
-      myReposts({ myId, ids, isTrack: false }),
+      queryIsSaved({ myId, ids, isTrack: false }),
+      queryIsReposted({ myId, ids, isTrack: false }),
     ])
 
     for (const playlist of playlists) {

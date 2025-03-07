@@ -5,6 +5,7 @@ import { Button } from './ui/button'
 import { CidImage } from './cid-image'
 import { Link } from 'react-router'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from './ui/hover-card'
+import { urlFor } from '@/lib/urlFor'
 
 export function CurrentUser() {
   const { myId, become } = useMe()
@@ -18,7 +19,7 @@ export function CurrentUser() {
   return (
     <HoverCard>
       <HoverCardTrigger asChild>
-        <Link to={`/${me.handle}`}>
+        <Link to={urlFor.user(me)}>
           <CidImage img={me.img} size={48} />
         </Link>
       </HoverCardTrigger>
@@ -32,7 +33,7 @@ export function CurrentUser() {
         />
         <div className="p-4">
           <div>{me.name}</div>
-          <Link to={`/${me.handle}`}>{me.handle}</Link>
+          <Link to={urlFor.user(me)}>{me.handle}</Link>
 
           <div>
             <Button

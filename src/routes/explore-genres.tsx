@@ -3,6 +3,7 @@ import { CidImage } from '@/components/cid-image'
 import { Link } from 'react-router'
 import { useQuery } from '@tanstack/react-query'
 import { PageTitle } from '@/components/page-title'
+import { urlFor } from '@/lib/urlFor'
 
 type Resp = {
   genre: string
@@ -23,7 +24,7 @@ export default function ExploreGenres() {
               {g.genre}
             </div>
             {g.users.map((user) => (
-              <Link to={`/${user.handle}`} key={user.id}>
+              <Link to={urlFor.user(user)} key={user.id}>
                 <CidImage img={user.img} size={150} />
                 <div>{user.name}</div>
               </Link>

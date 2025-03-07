@@ -1,26 +1,16 @@
 import { PlaylistTile } from '@/components/playlist-tile'
 import { DJContext } from '@/state/dj'
 import { PlaylistRow } from '@/types/playlist-row'
-import { TrackRow } from '@/types/track-row'
-import { UserRow } from '@/types/user-row'
 import { useQuery } from '@tanstack/react-query'
 import { useParams } from 'react-router'
 
-type UserResp = {
-  user: UserRow
-  tracks: TrackRow[]
-  playlists: PlaylistRow[]
-}
-
 export function UserPlaylists() {
   const { handle } = useParams()
-  const { data } = useQuery<UserResp>({
-    queryKey: [`/api/users/${handle}`],
+  const { data: playlists } = useQuery<PlaylistRow[]>({
+    queryKey: [`/api/users/${handle}/playlists`],
   })
 
-  if (!data) return null
-
-  const { playlists } = data
+  if (!playlists) return null
 
   const djc: DJContext = {
     path: location.pathname,

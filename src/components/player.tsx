@@ -15,6 +15,7 @@ import {
   SheetTrigger,
 } from './ui/sheet'
 import { hashid } from '@/lib/hashid'
+import { urlFor } from '@/lib/urlFor'
 
 export function Player() {
   const dj = useDJ()
@@ -32,7 +33,7 @@ export function Player() {
           <div>
             <div className="font-bold">{track.title}</div>
             <div>
-              <Link to={`/${track.user.handle}`}>{track.user.name}</Link>
+              <Link to={urlFor.user(track.user)}>{track.user.name}</Link>
             </div>
           </div>
 

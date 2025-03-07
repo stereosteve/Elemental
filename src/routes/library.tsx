@@ -2,9 +2,11 @@ import { simpleFetch } from '@/client'
 import { RepostButton } from '@/components/repost-button'
 import { SaveButton } from '@/components/save-button'
 import { Button } from '@/components/ui/button'
+import { urlFor } from '@/lib/urlFor'
 import { useMe } from '@/state/me'
 import { FeedStub } from '@/types/feed-stub'
 import { useInfiniteQuery } from '@tanstack/react-query'
+import { Link } from 'react-router'
 
 export function Library() {
   const { myId } = useMe()
@@ -43,8 +45,14 @@ export function Library() {
         <tbody>
           {justTracks.map((stub, idx) => (
             <tr key={idx}>
-              <td>{stub.track!.title.substring(0, 90)}</td>
-              <td>{stub.track!.user.name}</td>
+              <td>
+                <Link to={urlFor.track(stub.track!)}>{stub.track!.title}</Link>
+              </td>
+              <td>
+                <Link to={urlFor.user(stub.track!.user)}>
+                  {stub.track!.user.name}
+                </Link>
+              </td>
               <td>{stub.track!.createdAt}</td>
               <td>{stub.created_at}</td>
               {/* <td>{stub.track!.duration}</td> */}

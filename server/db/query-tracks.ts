@@ -1,8 +1,8 @@
 import { TrackRow } from '@/types/track-row'
 import { sql } from './db'
 import { knownRepostersBulk } from './known-reposters'
-import { mySaves } from './my-saves'
-import { myReposts } from './my-reposts'
+import { queryIsSaved } from './query-is-saved'
+import { queryIsReposted } from './query-is-reposted'
 
 type TracksQuery = {
   myId?: number
@@ -49,8 +49,8 @@ export async function queryTracks({ myId, ids, userId }: TracksQuery) {
     const ids = tracks.map((t) => t.id)
 
     const [saveSet, repostSet, known] = await Promise.all([
-      mySaves({ myId, ids, isTrack: true }),
-      myReposts({ myId, ids, isTrack: true }),
+      queryIsSaved({ myId, ids, isTrack: true }),
+      queryIsReposted({ myId, ids, isTrack: true }),
       knownRepostersBulk({
         myId,
         type: 'track',

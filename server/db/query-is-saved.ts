@@ -6,7 +6,7 @@ type Args = {
   isTrack: boolean
 }
 
-export async function mySaves({ myId, ids, isTrack }: Args) {
+export async function queryIsSaved({ myId, ids, isTrack }: Args) {
   const mySaves = await sql`
     select save_item_id
     from saves
