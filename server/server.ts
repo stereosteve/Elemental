@@ -9,6 +9,8 @@ import { queryUsers } from './db/query-users'
 import { genreArtists } from './db/top-genre-artists'
 import { fauxTrending } from './db/top-tracks'
 import { userReposts } from './db/user-reposts'
+import { userLibrary } from './db/user-library'
+// import { sql } from './db/db'
 
 const app = new Hono()
 
@@ -70,9 +72,19 @@ app.get('/api/users/:handle/reposts', async (c) => {
   })
 })
 
+app.get('/api/my/library', async (c) => {
+  const myId = getMyId(c)
+  const before = c.req.query('before')
+  if (!myId) return c.text('not found', 404)
+
+  const saves = await userLibrary({ userId: myId, myId, before })
+  return c.json(saves)
+})
+
 app.get('/api/tracks/:id', async (c) => {
+  const myId = getMyId(c)
   const id = parseInt(c.req.param('id'))
-  const rows = await queryTracks({ ids: [id] })
+  const rows = await queryTracks({ ids: [id], myId })
   const track = rows[0]
   if (!track) return c.text('not found', 404)
   const comments = await queryComments({ trackId: track.id })
@@ -101,6 +113,18 @@ function getMyId(c: Context) {
   const myId = parseInt(c.req.header('x-my-id') || c.req.query('myId') || '')
   return myId
 }
+
+// const resolveUserCache: Record<string, number> = {}
+// async function resolveUserId(c: Context) {
+//   const handle = c.req.param('handle')
+//   if (resolveUserCache[handle]) return resolveUserCache[handle]
+//   const users =
+//     await sql`select user_id from users where handle_lc = ${handle.toLowerCase()}`
+//   if (!users.length) return
+//   const { user_id } = users[0]
+//   resolveUserCache[handle] = user_id
+//   return user_id
+// }
 
 serve({
   fetch: app.fetch,

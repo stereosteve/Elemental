@@ -17,5 +17,12 @@
   }
 }
 
-
+.library-table {
+  th {
+    @apply border-t;
+  }
+  td {
+    @apply p-4 border-b;
+  }
+}
 

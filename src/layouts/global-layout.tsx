@@ -1,5 +1,12 @@
 import { Player } from '@/components/player'
-import { AudioWaveformIcon, HomeIcon, Loader2Icon, RssIcon } from 'lucide-react'
+import {
+  AudioWaveformIcon,
+  FlameIcon,
+  HeartIcon,
+  HomeIcon,
+  Loader2Icon,
+  RssIcon,
+} from 'lucide-react'
 import { NavLink, Outlet } from 'react-router'
 import { useIsFetching } from '@tanstack/react-query'
 import { CurrentUser } from '@/components/current-user'
@@ -7,6 +14,8 @@ import { CurrentUser } from '@/components/current-user'
 const navItems = [
   { to: '/', icon: <HomeIcon /> },
   { to: '/feed', icon: <RssIcon /> },
+  { to: '/hot', icon: <FlameIcon /> },
+  { to: '/library', icon: <HeartIcon /> },
   { to: '/explore/genres', icon: <AudioWaveformIcon /> },
 ]
 

@@ -9,7 +9,6 @@ import { useLocation } from 'react-router'
 import { Loader2Icon } from 'lucide-react'
 import { useMe } from '@/state/me'
 import { PageTitle } from '@/components/page-title'
-// import { useMe } from '@/state/me'
 
 export default function Feed() {
   const location = useLocation()
@@ -49,10 +48,6 @@ export default function Feed() {
 
       {feed.map((stub) => (
         <div key={stub.created_at} className="p-2 border m-2">
-          <div>
-            {stub.created_at} - {stub.obj_type}:{stub.obj_id} -{' '}
-            {stub.actor?.handle}
-          </div>
           {stub.track && <TrackTile track={stub.track} djContext={djContext} />}
           {stub.playlist && (
             <PlaylistTile playlist={stub.playlist} djContext={djContext} />

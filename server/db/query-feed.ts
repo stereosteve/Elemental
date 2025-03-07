@@ -29,6 +29,7 @@ export async function feed(myId: number, before?: string) {
         join follow_set using (user_id)
         where created_at < ${before}
           and created_at >= ${before}::timestamp - ${interval}
+          and is_delete = false
       )
 
       UNION ALL

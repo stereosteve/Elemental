@@ -1,20 +1,22 @@
+import './index.css'
+
+import { QueryClientProvider } from '@tanstack/react-query'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Route, Routes } from 'react-router'
-import { Home } from './routes/home'
-import { UserHome } from './routes/user-home'
-import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClient } from './client'
 import { GlobalLayout } from './layouts/global-layout'
-import { UserPlaylists } from './routes/user-playlists'
-import UserReposts from './routes/user-reposts'
+import UserLayout from './layouts/user-layout'
 import ExploreGenres from './routes/explore-genres'
 import Feed from './routes/feed'
-import { UserComments } from './routes/user-comments'
+import { Home } from './routes/home'
+import { Hot } from './routes/hot'
 import { TrackDetail } from './routes/track-detail'
-import UserLayout from './layouts/user-layout'
-
-import './index.css'
+import { UserComments } from './routes/user-comments'
+import { UserHome } from './routes/user-home'
+import { UserPlaylists } from './routes/user-playlists'
+import UserReposts from './routes/user-reposts'
+import { Library } from './routes/library'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -25,6 +27,8 @@ createRoot(document.getElementById('root')!).render(
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<h1>About</h1>} />
             <Route path="/feed" element={<Feed />} />
+            <Route path="/hot" element={<Hot />} />
+            <Route path="/library" element={<Library />} />
             <Route path="/explore/genres" element={<ExploreGenres />} />
 
             <Route path=":handle">
