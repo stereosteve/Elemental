@@ -13,4 +13,7 @@ export type UserRow = {
   repostCount: number
   followerCount: number
   followingCount: number
+
+  isFollowed: boolean
+  isFollower: boolean
 }

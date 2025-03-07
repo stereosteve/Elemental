@@ -1,17 +1,14 @@
 import { serve } from '@hono/node-server'
-import { Hono } from 'hono'
+import { Context, Hono } from 'hono'
 import { logger } from 'hono/logger'
-import {
-  fauxTrending,
-  feed,
-  genreArtists,
-  knownReposters,
-  queryComments,
-  queryPlaylists,
-  queryTracks,
-  queryUsers,
-  userReposts,
-} from './db'
+import { queryComments } from './db/query-comments'
+import { feed } from './db/query-feed'
+import { queryPlaylists } from './db/query-playlists'
+import { queryTracks } from './db/query-tracks'
+import { queryUsers } from './db/query-users'
+import { genreArtists } from './db/top-genre-artists'
+import { fauxTrending } from './db/top-tracks'
+import { userReposts } from './db/user-reposts'
 
 const app = new Hono()
 
@@ -26,9 +23,9 @@ app.get('/api/users', async (c) => {
 })
 
 app.get('/api/users/:handle', async (c) => {
-  const myId = parseInt(c.req.header('x-my-id') || c.req.query('myId') || '')
+  const myId = getMyId(c)
   const handle = c.req.param('handle')
-  const users = await queryUsers({ handle })
+  const users = await queryUsers({ handle, myId })
   const user = users[0]
   if (!user) return c.text('not found', 404)
 
@@ -57,12 +54,16 @@ app.get('/api/feed/:uid', async (c) => {
 })
 
 app.get('/api/users/:handle/reposts', async (c) => {
+  const myId = getMyId(c)
   const handle = c.req.param('handle')
   const users = await queryUsers({ handle })
   const user = users[0]
   if (!user) return c.text('not found', 404)
 
-  const reposts = await userReposts(user.id)
+  const reposts = await userReposts({
+    userId: user.id,
+    myId,
+  })
   return c.json({
     user,
     reposts,
@@ -81,27 +82,25 @@ app.get('/api/tracks/:id', async (c) => {
   })
 })
 
-app.get('/api/tracks/:id/known_reposters', async (c) => {
-  const myId = parseInt(c.req.header('x-my-id') || '')
-  const id = parseInt(c.req.param('id'))
-  if (!myId || !id) return c.json([])
-  const users = await knownReposters(myId, 'track', id)
-  return c.json(users)
-})
-
 app.get('/api/explore/genres', async (c) => {
   const rows = await genreArtists()
   return c.json(rows)
 })
 
 app.get('/api/explore/tracks', async (c) => {
-  const tracks = await fauxTrending()
+  const myId = getMyId(c)
+  const tracks = await fauxTrending({ myId })
   return c.json(tracks)
 })
 
 app.onError((err, c) => {
   return c.text(err.stack || err.message, 500)
 })
+
+function getMyId(c: Context) {
+  const myId = parseInt(c.req.header('x-my-id') || c.req.query('myId') || '')
+  return myId
+}
 
 serve({
   fetch: app.fetch,

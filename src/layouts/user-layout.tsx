@@ -1,5 +1,7 @@
 import { CidImage } from '@/components/cid-image'
 import { PageTitle } from '@/components/page-title'
+import { Stat } from '@/components/stat'
+import { Button } from '@/components/ui/button'
 import { useMe } from '@/state/me'
 import { UserRow } from '@/types/user-row'
 import { useQuery } from '@tanstack/react-query'
@@ -53,6 +55,20 @@ export function UserLayout() {
       </div>
 
       <div className="p-8">
+        <div className="my-4 flex gap-4">
+          <Stat label="Tracks" value={user.trackCount} />
+          <Stat label="Followers" value={user.followerCount} />
+          <Stat label="Following" value={user.followingCount} />
+
+          {user.isFollowed ? (
+            <Button>Following</Button>
+          ) : (
+            <Button variant="outline">Follow</Button>
+          )}
+
+          {user.isFollower && <Button>Follows Me</Button>}
+        </div>
+
         <Outlet />
       </div>
     </div>

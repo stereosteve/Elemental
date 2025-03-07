@@ -3,3 +3,21 @@
 - personalize more stuff... isFollowed, followsMe, isSaved, isReposted, etc.
 - saves view
 - play history...
+
+
+personalize...
+
+  users:
+    isFollowed
+    isFollower
+    tip stuff?
+
+  tracks:
+    knownReposters
+    isSaved
+    isReposted
+
+  playlists:
+    knownReposters
+    isSaved
+    isReposted
