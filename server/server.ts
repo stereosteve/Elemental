@@ -26,28 +26,23 @@ app.get('/api/users', async (c) => {
 })
 
 app.get('/api/users/:handle', async (c) => {
-  const myId = getMyId(c)
+  const myId = await getMyId(c)
   const handle = c.req.param('handle')
   const users = await queryUsers({ handle, myId })
   const user = users[0]
   if (!user) return c.text('not found', 404)
-
-  // const [tracks, playlists] = await Promise.all([
-  //   queryTracks({ myId, userId: user.id }),
-  //   queryPlaylists({ userId: user.id }),
-  // ])
   return c.json({ user })
 })
 
 app.get('/api/users/:handle/tracks', async (c) => {
-  const myId = getMyId(c)
+  const myId = await getMyId(c)
   const userId = await resolveUserId(c)
   const tracks = await queryTracks({ myId, userId })
   return c.json(tracks)
 })
 
 app.get('/api/users/:handle/playlists', async (c) => {
-  const myId = getMyId(c)
+  const myId = await getMyId(c)
   const userId = await resolveUserId(c)
   const playlists = await queryPlaylists({ myId, userId })
   return c.json(playlists)
@@ -59,15 +54,15 @@ app.get('/api/users/:handle/comments', async (c) => {
   return c.json({ comments })
 })
 
-app.get('/api/feed/:uid', async (c) => {
-  const userId = parseInt(c.req.param('uid'))
+app.get('/api/feed', async (c) => {
+  const myId = await getMyId(c)
   const before = c.req.query('before')
-  const rows = await feed(userId, before)
+  const rows = await feed(myId, before)
   return c.json(rows)
 })
 
 app.get('/api/users/:handle/reposts', async (c) => {
-  const myId = getMyId(c)
+  const myId = await getMyId(c)
   const userId = await resolveUserId(c)
   const reposts = await userReposts({
     userId,
@@ -79,14 +74,14 @@ app.get('/api/users/:handle/reposts', async (c) => {
 })
 
 app.get('/api/users/:handle/mutuals', async (c) => {
-  const myId = getMyId(c)
+  const myId = await getMyId(c)
   const userId = await resolveUserId(c)
   const mutuals = await queryMutuals({ myId, userId })
   return c.json(mutuals)
 })
 
 app.get('/api/my/library', async (c) => {
-  const myId = getMyId(c)
+  const myId = await getMyId(c)
   const before = c.req.query('before')
   if (!myId) return c.text('not found', 404)
 
@@ -95,7 +90,7 @@ app.get('/api/my/library', async (c) => {
 })
 
 app.get('/api/tracks/:id', async (c) => {
-  const myId = getMyId(c)
+  const myId = await getMyId(c)
   const id = parseInt(c.req.param('id'))
   const rows = await queryTracks({ ids: [id], myId })
   const track = rows[0]
@@ -113,7 +108,7 @@ app.get('/api/explore/genres', async (c) => {
 })
 
 app.get('/api/explore/tracks', async (c) => {
-  const myId = getMyId(c)
+  const myId = await getMyId(c)
   const tracks = await fauxTrending({ myId })
   return c.json(tracks)
 })
@@ -122,14 +117,23 @@ app.onError((err, c) => {
   return c.text(err.stack || err.message, 500)
 })
 
+//
+//
+//
 function getMyId(c: Context) {
-  const myId = parseInt(c.req.header('x-my-id') || c.req.query('myId') || '')
-  return myId
+  const queryUserId = parseInt(c.req.query('myId') || '')
+  if (queryUserId) return queryUserId
+  const myHandle = c.req.header('x-my-handle') || c.req.query('myHandle') || ''
+  return resolveHandle(myHandle)
+}
+
+async function resolveUserId(c: Context) {
+  return resolveHandle(c.req.param('handle'))
 }
 
 const _resolveUserCache: Record<string, number> = {}
-async function resolveUserId(c: Context) {
-  const handle = c.req.param('handle')
+async function resolveHandle(handle: string) {
+  if (!handle) return
   if (_resolveUserCache[handle]) return _resolveUserCache[handle]
   const users =
     await sql`select user_id from users where handle_lc = ${handle.toLowerCase()}`

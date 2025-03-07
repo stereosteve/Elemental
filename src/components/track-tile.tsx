@@ -16,7 +16,7 @@ type TrackTileProps = {
 }
 
 export function TrackTile({ track, djContext, imgSize, rank }: TrackTileProps) {
-  const { myId } = useMe()
+  const { myHandle } = useMe()
   const navigate = useNavigate()
   const dj = useDJ()
   const isPlaying = dj.isPlaying({ track, djContext: djContext })
@@ -52,7 +52,7 @@ export function TrackTile({ track, djContext, imgSize, rank }: TrackTileProps) {
       </div>
 
       <div className="flex ">
-        {track.user.id != myId && (
+        {track.user.handle != myHandle && (
           <>
             <SaveButton isSaved={track.isSaved} />
             <RepostButton isReposted={track.isReposted} />

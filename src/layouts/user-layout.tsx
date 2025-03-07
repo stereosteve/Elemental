@@ -8,6 +8,7 @@ import { urlFor } from '@/lib/urlFor'
 import { useMe } from '@/state/me'
 import { UserRow } from '@/types/user-row'
 import { useQuery } from '@tanstack/react-query'
+import { DramaIcon } from 'lucide-react'
 import { NavLink, Outlet, useParams } from 'react-router'
 
 type UserResp = {
@@ -15,7 +16,7 @@ type UserResp = {
 }
 
 export function UserLayout() {
-  const { become } = useMe()
+  const { myHandle, become } = useMe()
   const { handle } = useParams()
   const { data } = useQuery<UserResp>({
     queryKey: [`/api/users/${handle}`],
@@ -34,6 +35,14 @@ export function UserLayout() {
         src={`https://creatornode2.audius.co/content/${user.bannerImg}/2000x.jpg`}
       />
       <div className="flex gap-4 p-2">
+        {user.handle != myHandle && (
+          <Button
+            className="absolute top-4 right-4"
+            onClick={() => become(user.handle)}
+          >
+            <DramaIcon />
+          </Button>
+        )}
         <CidImage img={user.img} className="ml-4 mt-[-40px]" size={140} />
         <div className="flex-1">
           <div className="text-xl font-black">{user.name}</div>
@@ -52,7 +61,6 @@ export function UserLayout() {
             <NavLink to={`/${user.handle}/comments`}>Comments</NavLink>
 
             <div className="flex-1"></div>
-            <button onClick={() => become(user.id)}>become</button>
           </div>
         </div>
       </div>
@@ -62,14 +70,16 @@ export function UserLayout() {
           <Outlet />
         </div>
 
-        <div className="p-8">
+        <div className="p-8 max-w-[300px]">
+          <p>{user.bio}</p>
+          <p>{user.location}</p>
           <div className="my-4 flex gap-4">
             <Stat label="Tracks" value={user.trackCount} />
             <Stat label="Followers" value={user.followerCount} />
             <Stat label="Following" value={user.followingCount} />
           </div>
 
-          <FollowButton isFollowed={user.isFollowed} />
+          <FollowButton handle={user.handle} isFollowed={user.isFollowed} />
           {user.isFollower && <Button>Follows Me</Button>}
 
           <Mutuals handle={user.handle} />

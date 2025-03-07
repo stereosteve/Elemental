@@ -9,9 +9,9 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 import { Link } from 'react-router'
 
 export function Library() {
-  const { myId } = useMe()
+  const { myHandle } = useMe()
   const { data, fetchNextPage } = useInfiniteQuery({
-    queryKey: ['library'],
+    queryKey: ['library', myHandle],
     queryFn: async ({ pageParam }) => {
       const res = await simpleFetch(`/api/my/library?before=${pageParam}`)
       return res as FeedStub[]
@@ -20,10 +20,9 @@ export function Library() {
     getNextPageParam: (lastPage) => {
       return lastPage[lastPage.length - 1].created_at
     },
-    enabled: !!myId,
+    enabled: !!myHandle,
   })
 
-  // const { data } = useQuery<FeedStub[]>({ queryKey: [`/api/my/saves`] })
   if (!data) return
 
   const justTracks = data.pages.flat().filter((s) => s.track)

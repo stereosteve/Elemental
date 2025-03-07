@@ -14,7 +14,7 @@ type PlaylistTileProps = {
 }
 
 export function PlaylistTile({ playlist, djContext }: PlaylistTileProps) {
-  const { myId } = useMe()
+  const { myHandle } = useMe()
   const dj = useDJ()
 
   const isPlaying = dj.isPlaying({ playlist, djContext })
@@ -34,7 +34,7 @@ export function PlaylistTile({ playlist, djContext }: PlaylistTileProps) {
           <div className="flex gap-2">
             <Link to={urlFor.user(playlist.user)}>{playlist.user.name}</Link>
             <div>{new Date(playlist.createdAt).toDateString()}</div>
-            {playlist.user.id != myId && (
+            {playlist.user.handle != myHandle && (
               <div>
                 <SaveButton isSaved={playlist.isSaved} />
                 <RepostButton isReposted={playlist.isReposted} />

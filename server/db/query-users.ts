@@ -17,6 +17,8 @@ export async function queryUsers({ handle, ids, q, limit, myId }: UserQuery) {
     user_id as id,
     name,
     handle,
+    bio,
+    location,
     coalesce(profile_picture_sizes, profile_picture) as img,
     coalesce(cover_photo_sizes, cover_photo) as "bannerImg",
     users.created_at as "createdAt",

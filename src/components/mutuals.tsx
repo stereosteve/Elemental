@@ -9,14 +9,15 @@ type Props = {
 }
 
 export function Mutuals({ handle }: Props) {
-  const { myId } = useMe()
+  const { myHandle } = useMe()
+  const isSelf = myHandle == handle
 
   const { data } = useQuery<UserRow[]>({
     queryKey: [`/api/users/${handle}/mutuals`],
-    enabled: !!myId,
+    enabled: Boolean(myHandle) && !isSelf,
   })
 
-  if (!data) return null
+  if (isSelf || !data?.length) return null
 
   return (
     <div>

@@ -3,6 +3,8 @@ export type UserRow = {
   id: number
   name: string
   handle: string
+  bio: string
+  location: string
   img: string
   bannerImg: string
   createdAt: string

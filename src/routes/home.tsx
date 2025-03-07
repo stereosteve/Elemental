@@ -11,7 +11,7 @@ export function Home() {
       <UserSearch
         onSelect={(user) => {
           console.log('howdy', user)
-          me.become(user.id)
+          me.become(user.handle)
         }}
       />
     </div>

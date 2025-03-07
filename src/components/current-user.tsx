@@ -8,13 +8,13 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from './ui/hover-card'
 import { urlFor } from '@/lib/urlFor'
 
 export function CurrentUser() {
-  const { myId, become } = useMe()
-  const { data } = useQuery<UserRow[]>({
-    queryKey: [`/api/users?id=${myId}`],
-    enabled: !!myId,
+  const { myHandle, become } = useMe()
+  const { data } = useQuery<{ user: UserRow }>({
+    queryKey: [`/api/users/${myHandle}`],
+    enabled: !!myHandle,
   })
-  const me = data && data[0]
-  if (!me) return null
+  if (!data) return null
+  const me = data.user
 
   return (
     <HoverCard>

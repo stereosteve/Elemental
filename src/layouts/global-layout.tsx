@@ -25,7 +25,7 @@ export function GlobalLayout() {
   return (
     <div>
       {isFetching > 0 && (
-        <Loader2Icon className="animate-spin fixed top-4 right-4" size={48} />
+        <Loader2Icon className="animate-spin fixed top-4 right-12" size={48} />
       )}
       <div className="nav-rail z-10">
         {navItems.map((i) => (

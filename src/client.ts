@@ -9,11 +9,11 @@ export const queryClient = new QueryClient({
     queries: {
       queryFn: async ({ queryKey }) => {
         const u = queryKey[0] as string
-        const { myId } = meStore.getState()
-        console.log(u, { myId })
+        const { myHandle } = meStore.getState()
+        console.log(u, { myHandle })
         const resp = await fetch(u, {
           headers: {
-            'x-my-id': `${myId}`,
+            'x-my-handle': `${myHandle}`,
           },
         })
         if (resp.ok) {
@@ -30,12 +30,7 @@ export const queryClient = new QueryClient({
 })
 
 export async function simpleFetch(u: string) {
-  // const { myId } = meStore.getState()
-  const myId = 'todo'
   return queryClient.fetchQuery({
-    queryKey: [u, myId],
-    // queryFn: async () => {
-    //   return fetch(u).then((r) => r.json())
-    // },
+    queryKey: [u],
   })
 }
