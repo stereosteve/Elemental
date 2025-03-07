@@ -19,6 +19,8 @@ export async function queryTracks({ myId, ids, userId }: TracksQuery) {
     coalesce(cover_art_sizes, cover_art) as img,
     tracks.created_at as "createdAt",
 
+    stream_conditions as "streamConditions",
+
     repost_count as "repostCount",
     save_count as "saveCount",
     comment_count as "commentCount",

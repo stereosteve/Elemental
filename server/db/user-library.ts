@@ -10,8 +10,6 @@ type Args = {
 
 export async function userLibrary({ userId, myId, before }: Args) {
   before = before || 'NOW()'
-  // might want to make this dynamic
-  const interval = sql.unsafe(`INTERVAL '90 DAYS'`)
 
   let stubs: FeedStub[] = await sql`
   with actions as (
@@ -26,8 +24,8 @@ export async function userLibrary({ userId, myId, before }: Args) {
       where user_id = ${userId}
         and is_delete = false
         and created_at < ${before}
-        and created_at >= ${before}::timestamp - ${interval}
       order by created_at desc
+      limit 100
     )
 
 
@@ -44,8 +42,8 @@ export async function userLibrary({ userId, myId, before }: Args) {
       where user_id = ${userId}
         and is_delete = false
         and created_at < ${before}
-        and created_at >= ${before}::timestamp - ${interval}
       order by created_at desc
+      limit 100
     )
   )
   select * from actions order by created_at desc

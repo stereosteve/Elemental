@@ -7,6 +7,7 @@ import { RepostButton } from './repost-button'
 import { SaveButton } from './save-button'
 import { useMe } from '@/state/me'
 import { urlFor } from '@/lib/urlFor'
+import { LockIcon } from 'lucide-react'
 
 type TrackTileProps = {
   track: TrackRow
@@ -52,6 +53,11 @@ export function TrackTile({ track, djContext, imgSize, rank }: TrackTileProps) {
       </div>
 
       <div className="flex ">
+        {track.streamConditions && (
+          <div title={JSON.stringify(track.streamConditions)}>
+            <LockIcon />
+          </div>
+        )}
         {track.user.handle != myHandle && (
           <>
             <SaveButton isSaved={track.isSaved} />

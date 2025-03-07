@@ -11,6 +11,12 @@ export type TrackRow = {
   saveCount: number
   commentCount: number
 
+  streamConditions:
+    | PurchaseCondition
+    | TipCondition
+    | FollowCondition
+    | NftCondition
+
   user: {
     id: number
     handle: string
@@ -20,4 +26,24 @@ export type TrackRow = {
   knownReposters?: UserRow[]
   isReposted: boolean
   isSaved: boolean
+}
+
+type PurchaseCondition = {
+  usdc_purchase: {
+    price: number
+  }
+}
+
+type TipCondition = {
+  tip_user_id: number
+}
+
+type FollowCondition = {
+  follow_user_id: number
+}
+
+type NftCondition = {
+  nft_collection: {
+    name: string
+  }
 }

@@ -45,7 +45,12 @@ export function Library() {
           {justTracks.map((stub, idx) => (
             <tr key={idx}>
               <td>
-                <Link to={urlFor.track(stub.track!)}>{stub.track!.title}</Link>
+                <Link
+                  to={urlFor.track(stub.track!)}
+                  className="block max-w-96 truncate"
+                >
+                  {stub.track!.title}
+                </Link>
               </td>
               <td>
                 <Link to={urlFor.user(stub.track!.user)}>
