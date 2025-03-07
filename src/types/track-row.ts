@@ -18,4 +18,6 @@ export type TrackRow = {
   }
 
   knownReposters?: UserRow[]
+  isReposted: boolean
+  isSaved: boolean
 }

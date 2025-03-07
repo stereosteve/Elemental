@@ -1,8 +1,11 @@
-import type { PlaylistRow } from '@/types/playlist-row'
-import { CidImage } from './cid-image'
 import { useDJ, type DJContext } from '@/state/dj'
-import { Link } from 'react-router'
+import type { PlaylistRow } from '@/types/playlist-row'
 import clsx from 'clsx'
+import { Link } from 'react-router'
+import { CidImage } from './cid-image'
+import { RepostButton } from './repost-button'
+import { SaveButton } from './save-button'
+import { useMe } from '@/state/me'
 
 type PlaylistTileProps = {
   playlist: PlaylistRow
@@ -10,6 +13,7 @@ type PlaylistTileProps = {
 }
 
 export function PlaylistTile({ playlist, djContext }: PlaylistTileProps) {
+  const { myId } = useMe()
   const dj = useDJ()
 
   const isPlaying = dj.isPlaying({ playlist, djContext })
@@ -29,6 +33,12 @@ export function PlaylistTile({ playlist, djContext }: PlaylistTileProps) {
           <div className="flex gap-2">
             <Link to={`/${playlist.user.handle}`}>{playlist.user.name}</Link>
             <div>{new Date(playlist.createdAt).toDateString()}</div>
+            {playlist.user.id != myId && (
+              <div>
+                <SaveButton isSaved={playlist.isSaved} />
+                <RepostButton isReposted={playlist.isReposted} />
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -37,9 +47,7 @@ export function PlaylistTile({ playlist, djContext }: PlaylistTileProps) {
         <div
           className={clsx(
             'rounded-md p-1 px-2',
-            dj.isPlaying({ playlist, track, djContext: djContext })
-              ? 'bg-secondary'
-              : ''
+            dj.isPlaying({ playlist, track, djContext }) ? 'bg-secondary' : ''
           )}
           key={idx}
         >

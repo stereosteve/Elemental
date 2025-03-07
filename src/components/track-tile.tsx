@@ -1,9 +1,12 @@
-import clsx from 'clsx'
-import { Link, useNavigate } from 'react-router'
 import { slugify } from '@/lib/slugify'
 import { useDJ, type DJContext } from '@/state/dj'
 import type { TrackRow } from '@/types/track-row'
+import clsx from 'clsx'
+import { Link, useNavigate } from 'react-router'
 import { CidImage } from './cid-image'
+import { RepostButton } from './repost-button'
+import { SaveButton } from './save-button'
+import { useMe } from '@/state/me'
 
 type TrackTileProps = {
   track: TrackRow
@@ -13,12 +16,9 @@ type TrackTileProps = {
 }
 
 export function TrackTile({ track, djContext, imgSize, rank }: TrackTileProps) {
+  const { myId } = useMe()
   const navigate = useNavigate()
   const dj = useDJ()
-  // const { myId } = useMe()
-  // const { data: knownReposters } = useQuery<UserRow[]>({
-  //   queryKey: [`/api/tracks/${track.id}/known_reposters`, myId],
-  // })
   const isPlaying = dj.isPlaying({ track, djContext: djContext })
 
   return (
@@ -55,16 +55,24 @@ export function TrackTile({ track, djContext, imgSize, rank }: TrackTileProps) {
         </div>
       </div>
 
-      <div className="flex pl-[8px]">
-        {track.knownReposters?.map((user) => (
-          <CidImage
-            key={user.id}
-            img={user.img}
-            size={32}
-            className="rounded-full ml-[-8px]"
-            onClick={() => navigate(`/${user.handle}`)}
-          />
-        ))}
+      <div className="flex ">
+        {track.user.id != myId && (
+          <>
+            <SaveButton isSaved={track.isSaved} />
+            <RepostButton isReposted={track.isReposted} />
+          </>
+        )}
+        <div className="pl-[8px]">
+          {track.knownReposters?.map((user) => (
+            <CidImage
+              key={user.id}
+              img={user.img}
+              size={32}
+              className="rounded-full ml-[-8px]"
+              onClick={() => navigate(`/${user.handle}`)}
+            />
+          ))}
+        </div>
       </div>
     </div>
   )

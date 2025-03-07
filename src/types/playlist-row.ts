@@ -21,4 +21,7 @@ export type PlaylistRow = {
   }
 
   tracks: TrackRow[]
+
+  isSaved: boolean
+  isReposted: boolean
 }

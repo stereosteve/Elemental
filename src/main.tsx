@@ -1,6 +1,5 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import './index.css'
 import { BrowserRouter, Route, Routes } from 'react-router'
 import { Home } from './routes/home'
 import { UserHome } from './routes/user-home'
@@ -14,6 +13,8 @@ import Feed from './routes/feed'
 import { UserComments } from './routes/user-comments'
 import { TrackDetail } from './routes/track-detail'
 import UserLayout from './layouts/user-layout'
+
+import './index.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

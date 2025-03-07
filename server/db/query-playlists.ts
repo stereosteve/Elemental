@@ -2,6 +2,8 @@ import { PlaylistRow } from '@/types/playlist-row'
 import { sql } from './db'
 import { queryTracks } from './query-tracks'
 import { keyBy } from '@/lib/keyBy'
+import { myReposts } from './my-reposts'
+import { mySaves } from './my-saves'
 
 type PlaylistQuery = {
   ids?: number[]
@@ -36,23 +38,34 @@ export async function queryPlaylists({ ids, userId, myId }: PlaylistQuery) {
   `
 
   // attach tracks
-  const trackIds = playlists.flatMap((p) =>
-    p.playlist_contents.track_ids.map((t) => t.track)
-  )
-  const tracks = await queryTracks({ ids: trackIds })
-  const tracksById = keyBy(tracks, 'id')
+  {
+    const trackIds = playlists.flatMap((p) =>
+      p.playlist_contents.track_ids.map((t) => t.track)
+    )
+    const tracks = await queryTracks({ ids: trackIds })
+    const tracksById = keyBy(tracks, 'id')
 
-  for (const playlist of playlists) {
-    playlist.tracks = playlist.playlist_contents.track_ids
-      .map((t) => tracksById[t.track])
-      .filter(Boolean)
+    for (const playlist of playlists) {
+      playlist.tracks = playlist.playlist_contents.track_ids
+        .map((t) => tracksById[t.track])
+        .filter(Boolean)
+    }
   }
 
-  // todo: personalize
+  // personalize
   if (myId) {
-    // known reposters
-    // isSaved
-    // isReposted
+    // todo: known reposters
+    const ids = playlists.map((p) => p.id)
+
+    const [saveSet, repostSet] = await Promise.all([
+      mySaves({ myId, ids, isTrack: false }),
+      myReposts({ myId, ids, isTrack: false }),
+    ])
+
+    for (const playlist of playlists) {
+      playlist.isReposted = repostSet.has(playlist.id)
+      playlist.isSaved = saveSet.has(playlist.id)
+    }
   }
 
   // debug timing...

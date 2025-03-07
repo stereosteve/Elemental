@@ -34,7 +34,7 @@ export function UserLayout() {
         <CidImage img={user.img} className="ml-4 mt-[-40px]" size={140} />
         <div className="flex-1">
           <div className="text-xl font-black">{user.name}</div>
-          <div className="flex gap-2 p-2">
+          <div className="flex gap-2 p-2 user-nav">
             {user.trackCount > 0 && (
               <NavLink to={`/${user.handle}`} end>
                 Tracks
