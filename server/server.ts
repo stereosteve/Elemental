@@ -1,3 +1,4 @@
+import { serveStatic } from '@hono/node-server/serve-static'
 import { serve } from '@hono/node-server'
 import { Context, Hono } from 'hono'
 import { logger } from 'hono/logger'
@@ -12,6 +13,7 @@ import { userReposts } from './db/user-reposts'
 import { userLibrary } from './db/user-library'
 import { sql } from './db/db'
 import { queryMutuals } from './db/query-mutuals'
+import { readFile } from 'fs/promises'
 
 const app = new Hono()
 
@@ -112,6 +114,13 @@ app.get('/api/explore/tracks', async (c) => {
   const tracks = await fauxTrending({ myId })
   return c.json(tracks)
 })
+
+//
+// SPA Handler
+//
+app.use(serveStatic({ root: './dist' }))
+const indexHtml = readFile('dist/index.html', 'utf8')
+app.get('*', async (c) => c.html(await indexHtml))
 
 app.onError((err, c) => {
   return c.text(err.stack || err.message, 500)
