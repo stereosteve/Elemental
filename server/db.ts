@@ -307,11 +307,13 @@ export async function genreArtists() {
       follower_count,
       ROW_NUMBER() OVER (PARTITION BY dominant_genre ORDER BY follower_count DESC) AS row_index
     FROM aggregate_user
+    JOIN users using (user_id)
     WHERE
       dominant_genre is not null
       AND dominant_genre != ''
       AND dominant_genre_count > 3
       AND follower_count > 10
+      AND is_available = true
   ),
   ranked_genres as (
     select

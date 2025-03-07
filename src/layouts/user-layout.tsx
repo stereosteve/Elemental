@@ -1,3 +1,5 @@
+import { CidImage } from '@/components/cid-image'
+import { PageTitle } from '@/components/page-title'
 import { useMe } from '@/state/me'
 import { UserRow } from '@/types/user-row'
 import { useQuery } from '@tanstack/react-query'
@@ -18,22 +20,36 @@ export function UserLayout() {
 
   return (
     <div className="user-layout">
-      <div className="text-xl bg-blue-100 p-2">{user.name}</div>
-      <div className="flex gap-2">
-        {user.trackCount > 0 && (
-          <NavLink to={`/${user.handle}`} end>
-            Tracks
-          </NavLink>
-        )}
-        {(user.playlistCount > 0 || user.albumCount > 0) && (
-          <NavLink to={`/${user.handle}/playlists`}>Playlists</NavLink>
-        )}
-        {user.repostCount > 0 && (
-          <NavLink to={`/${user.handle}/reposts`}>Reposts</NavLink>
-        )}
-        <NavLink to={`/${user.handle}/comments`}>Comments</NavLink>
+      <PageTitle title={`${user.handle}`} />
+      <img
+        loading="lazy"
+        decoding="async"
+        key={user.bannerImg}
+        className="h-64 w-full object-cover"
+        src={`https://creatornode2.audius.co/content/${user.bannerImg}/2000x.jpg`}
+      />
+      <div className="flex gap-4 p-2">
+        <CidImage img={user.img} className="ml-4 mt-[-40px]" size={140} />
+        <div className="flex-1">
+          <div className="text-xl font-black">{user.name}</div>
+          <div className="flex gap-2 p-2">
+            {user.trackCount > 0 && (
+              <NavLink to={`/${user.handle}`} end>
+                Tracks
+              </NavLink>
+            )}
+            {(user.playlistCount > 0 || user.albumCount > 0) && (
+              <NavLink to={`/${user.handle}/playlists`}>Playlists</NavLink>
+            )}
+            {user.repostCount > 0 && (
+              <NavLink to={`/${user.handle}/reposts`}>Reposts</NavLink>
+            )}
+            <NavLink to={`/${user.handle}/comments`}>Comments</NavLink>
 
-        <button onClick={() => become(user.id)}>become</button>
+            <div className="flex-1"></div>
+            <button onClick={() => become(user.id)}>become</button>
+          </div>
+        </div>
       </div>
 
       <div className="p-8">

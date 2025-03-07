@@ -29,8 +29,12 @@ createRoot(document.getElementById('root')!).render(
             <Route path=":handle">
               <Route element={<UserLayout />}>
                 <Route index element={<UserHome />} />
-                <Route path="playlists" element={<UserPlaylists />} />
-                <Route path="reposts" element={<UserReposts />} />
+                <Route
+                  path="playlists"
+                  element={<UserPlaylists />}
+                  id="Playlists"
+                />
+                <Route path="reposts" element={<UserReposts />} id="Reposts" />
                 <Route path="feed" element={<UserReposts />} />
                 <Route path="comments" element={<UserComments />} />
               </Route>

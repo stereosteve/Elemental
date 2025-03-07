@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import { slugify } from '@/lib/slugify'
 import { useDJ, type DJContext } from '@/state/dj'
 import type { TrackRow } from '@/types/track-row'
@@ -13,6 +13,7 @@ type TrackTileProps = {
 }
 
 export function TrackTile({ track, djContext, imgSize, rank }: TrackTileProps) {
+  const navigate = useNavigate()
   const dj = useDJ()
   // const { myId } = useMe()
   // const { data: knownReposters } = useQuery<UserRow[]>({
@@ -61,6 +62,7 @@ export function TrackTile({ track, djContext, imgSize, rank }: TrackTileProps) {
             img={user.img}
             size={32}
             className="rounded-full ml-[-8px]"
+            onClick={() => navigate(`/${user.handle}`)}
           />
         ))}
       </div>

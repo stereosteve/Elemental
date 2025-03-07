@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { useLocation } from 'react-router'
 import { Loader2Icon } from 'lucide-react'
 import { useMe } from '@/state/me'
+import { PageTitle } from '@/components/page-title'
 // import { useMe } from '@/state/me'
 
 export default function Feed() {
@@ -41,6 +42,7 @@ export default function Feed() {
 
   return (
     <div className="container mx-auto pb-8">
+      <PageTitle title="Feed" />
       {isFetching && (
         <Loader2Icon className="animate-spin fixed top-4 right-4" size={48} />
       )}

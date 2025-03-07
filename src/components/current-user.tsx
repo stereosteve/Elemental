@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { Button } from './ui/button'
 import { CidImage } from './cid-image'
 import { Link } from 'react-router'
+import { HoverCard, HoverCardContent, HoverCardTrigger } from './ui/hover-card'
 
 export function CurrentUser() {
   const { myId, become } = useMe()
@@ -15,21 +16,35 @@ export function CurrentUser() {
   if (!me) return null
 
   return (
-    <div className="p-2 bg-secondary flex gap-2">
-      <CidImage img={me.img} />
-      <div className="flex-grow">
-        <div>{me.name}</div>
-        <Link to={`/${me.handle}`}>{me.handle}</Link>
-      </div>
-      <div>
-        <Button
-          onClick={() => {
-            become()
-          }}
-        >
-          logout
-        </Button>
-      </div>
-    </div>
+    <HoverCard>
+      <HoverCardTrigger asChild>
+        <Link to={`/${me.handle}`}>
+          <CidImage img={me.img} size={48} />
+        </Link>
+      </HoverCardTrigger>
+      <HoverCardContent className="w-80 p-0 overflow-clip" side="right">
+        <img
+          loading="lazy"
+          decoding="async"
+          key={me.bannerImg}
+          className="h-32 w-full object-cover"
+          src={`https://creatornode2.audius.co/content/${me.bannerImg}/2000x.jpg`}
+        />
+        <div className="p-4">
+          <div>{me.name}</div>
+          <Link to={`/${me.handle}`}>{me.handle}</Link>
+
+          <div>
+            <Button
+              onClick={() => {
+                become()
+              }}
+            >
+              logout
+            </Button>
+          </div>
+        </div>
+      </HoverCardContent>
+    </HoverCard>
   )
 }
