@@ -3,7 +3,7 @@ import { Link } from 'react-router'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from './ui/hover-card'
 import { useQuery } from '@tanstack/react-query'
 import { UserRow } from '@/types/user-row'
-import { useState } from 'react'
+import { ReactNode, useState } from 'react'
 import { CidImage } from './cid-image'
 import { FollowButton } from './follow-button'
 import { Stat } from './stat'
@@ -13,11 +13,17 @@ type Props = {
     handle: string
     name: string
   }
+  children?: ReactNode
 }
 
 export function UserHoverCard(props: Props) {
   const [isOpen, setIsOpen] = useState(false)
+
   const propUser = props.user
+  const children = props.children || (
+    <Link to={urlFor.user(propUser)}>{propUser.name}</Link>
+  )
+
   const { data } = useQuery<{ user: UserRow }>({
     queryKey: [`/api/users/${propUser.handle}`],
     enabled: isOpen,
@@ -27,11 +33,9 @@ export function UserHoverCard(props: Props) {
 
   return (
     <HoverCard onOpenChange={setIsOpen}>
-      <HoverCardTrigger asChild>
-        <Link to={urlFor.user(propUser)}>{propUser.name}</Link>
-      </HoverCardTrigger>
+      <HoverCardTrigger asChild>{children}</HoverCardTrigger>
       {user && (
-        <HoverCardContent className="w-80 p-0 overflow-hidden" side="right">
+        <HoverCardContent className="w-80 p-0 overflow-hidden" side="left">
           <div
             className="relative h-48 bg-cover bg-center"
             style={{

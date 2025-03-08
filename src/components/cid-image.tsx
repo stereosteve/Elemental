@@ -53,7 +53,11 @@ export function CidImage({ img, size, className, ...props }: CidImageProps) {
   return (
     <button
       style={{ width: size, height: size }}
-      className={cn('rounded-md overflow-clip', className)}
+      className={cn(
+        'rounded-md overflow-clip',
+        props.onClick && 'cursor-pointer',
+        className
+      )}
       {...props}
     >
       {e}

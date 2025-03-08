@@ -68,13 +68,15 @@ export function TrackTile({ track, djContext, imgSize, rank }: TrackTileProps) {
         )}
         <div className="pl-[8px]">
           {track.knownReposters?.map((user) => (
-            <CidImage
-              key={user.id}
-              img={user.img}
-              size={32}
-              className="rounded-full ml-[-8px]"
-              onClick={() => navigate(urlFor.user(user))}
-            />
+            <UserHoverCard user={user}>
+              <CidImage
+                key={user.id}
+                img={user.img}
+                size={32}
+                className="rounded-full ml-[-8px] cursor-pointer"
+                onClick={() => navigate(urlFor.user(user))}
+              />
+            </UserHoverCard>
           ))}
         </div>
       </div>
