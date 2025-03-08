@@ -1,23 +1,6 @@
-- don't return tracks / playlists with user request?
-- support myId on all requests
-- personalize more stuff... isFollowed, followsMe, isSaved, isReposted, etc.
-- saves view
 - play history...
+- "notifs" - basically news about your tracks... and subscriber news... and some spam
+- better explore / home page
+- user hover cards
 
 
-personalize...
-
-  users:
-    isFollowed
-    isFollower
-    tip stuff?
-
-  tracks:
-    knownReposters
-    isSaved
-    isReposted
-
-  playlists:
-    knownReposters
-    isSaved
-    isReposted

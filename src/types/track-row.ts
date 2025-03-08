@@ -18,7 +18,6 @@ export type TrackRow = {
     | NftCondition
 
   user: {
-    id: number
     handle: string
     name: string
   }

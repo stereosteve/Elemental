@@ -8,6 +8,7 @@ import { SaveButton } from './save-button'
 import { useMe } from '@/state/me'
 import { urlFor } from '@/lib/urlFor'
 import { LockIcon } from 'lucide-react'
+import { UserHoverCard } from './user-hover-card'
 
 type TrackTileProps = {
   track: TrackRow
@@ -48,7 +49,8 @@ export function TrackTile({ track, djContext, imgSize, rank }: TrackTileProps) {
           <Link to={urlFor.track(track)}>{track.title}</Link>
         </div>
         <div className="flex gap-2">
-          <Link to={urlFor.user(track.user)}>{track.user.name}</Link>
+          <UserHoverCard user={track.user} />
+          {/* <Link to={urlFor.user(track.user)}>{track.user.name}</Link> */}
         </div>
       </div>
 

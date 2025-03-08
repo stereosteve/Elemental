@@ -26,7 +26,6 @@ export async function queryTracks({ myId, ids, userId }: TracksQuery) {
     comment_count as "commentCount",
 
     json_build_object(
-      'id', u.user_id,
       'handle', u.handle,
       'name', u.name
     ) as user

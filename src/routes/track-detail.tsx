@@ -25,7 +25,7 @@ export function TrackDetail() {
   }
 
   return (
-    <div>
+    <div className="p-24">
       <TrackTile track={track} djContext={djContext} />
       {comments.map((stub, idx) => (
         <div className="p-4" key={idx}>

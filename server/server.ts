@@ -106,6 +106,7 @@ app.get('/api/tracks/:id', async (c) => {
 
 app.get('/api/explore/genres', async (c) => {
   const rows = await genreArtists()
+  c.header('Cache-Control', 'max-age=3600')
   return c.json(rows)
 })
 
