@@ -7,6 +7,7 @@ import { RepostButton } from './repost-button'
 import { SaveButton } from './save-button'
 import { useMe } from '@/state/me'
 import { urlFor } from '@/lib/urlFor'
+import { UserHoverCard } from './user-hover-card'
 
 type PlaylistTileProps = {
   playlist: PlaylistRow
@@ -20,8 +21,8 @@ export function PlaylistTile({ playlist, djContext }: PlaylistTileProps) {
   const isPlaying = dj.isPlaying({ playlist, djContext })
 
   return (
-    <div className={clsx(isPlaying ? '' : '')} key={playlist.id}>
-      <div className="flex gap-4 items-center">
+    <div className={clsx('p-2 px-4', isPlaying ? '' : '')} key={playlist.id}>
+      <div className="flex gap-4 items-center mb-4">
         <CidImage
           img={playlist.img}
           size={80}
@@ -29,18 +30,20 @@ export function PlaylistTile({ playlist, djContext }: PlaylistTileProps) {
             dj.playPlaylist(playlist, playlist.tracks[0], djContext)
           }
         />
-        <div>
+        <div className="flex-grow">
           <div className="text-2xl font-black">{playlist.name}</div>
           <div className="flex gap-2">
-            <Link to={urlFor.user(playlist.user)}>{playlist.user.name}</Link>
+            <UserHoverCard user={playlist.user} />
             <div>{new Date(playlist.createdAt).toDateString()}</div>
-            {playlist.user.handle != myHandle && (
-              <div>
-                <SaveButton isSaved={playlist.isSaved} />
-                <RepostButton isReposted={playlist.isReposted} />
-              </div>
-            )}
           </div>
+        </div>
+        <div className="flex gap-2">
+          {playlist.user.handle != myHandle && (
+            <>
+              <SaveButton isSaved={playlist.isSaved} />
+              <RepostButton isReposted={playlist.isReposted} />
+            </>
+          )}
         </div>
       </div>
 

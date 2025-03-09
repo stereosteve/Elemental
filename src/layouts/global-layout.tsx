@@ -1,21 +1,23 @@
+import { CurrentUser } from '@/components/current-user'
 import { Player } from '@/components/player'
+import { useIsFetching } from '@tanstack/react-query'
 import {
   AudioWaveformIcon,
   FlameIcon,
   HeartIcon,
-  HomeIcon,
+  HistoryIcon,
   Loader2Icon,
-  RssIcon,
+  MountainIcon,
+  WindIcon,
 } from 'lucide-react'
 import { NavLink, Outlet } from 'react-router'
-import { useIsFetching } from '@tanstack/react-query'
-import { CurrentUser } from '@/components/current-user'
 
 const navItems = [
-  { to: '/', icon: <HomeIcon /> },
-  { to: '/feed', icon: <RssIcon /> },
+  { to: '/', icon: <MountainIcon /> },
+  { to: '/feed', icon: <WindIcon /> },
   { to: '/hot', icon: <FlameIcon /> },
   { to: '/library', icon: <HeartIcon /> },
+  { to: '/play-history', icon: <HistoryIcon /> },
   { to: '/explore/genres', icon: <AudioWaveformIcon /> },
 ]
 
@@ -27,7 +29,9 @@ export function GlobalLayout() {
       {isFetching > 0 && (
         <Loader2Icon className="animate-spin fixed top-4 right-12" size={48} />
       )}
-      <div className="nav-rail z-10">
+      <div className="nav-rail z-10 bg-background">
+        <CurrentUser />
+
         {navItems.map((i) => (
           <NavLink
             key={i.to}
@@ -37,10 +41,6 @@ export function GlobalLayout() {
             {i.icon}
           </NavLink>
         ))}
-
-        <div className="flex items-center justify-center w-16 h-16">
-          <CurrentUser />
-        </div>
       </div>
       <div className="ml-16">
         <Outlet />

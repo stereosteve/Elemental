@@ -54,7 +54,7 @@ export function TrackTile({ track, djContext, imgSize, rank }: TrackTileProps) {
         </div>
       </div>
 
-      <div className="flex ">
+      <div className="flex gap-2 items-center">
         {track.streamConditions && (
           <div title={JSON.stringify(track.streamConditions)}>
             <LockIcon />
@@ -68,9 +68,8 @@ export function TrackTile({ track, djContext, imgSize, rank }: TrackTileProps) {
         )}
         <div className="pl-[8px]">
           {track.knownReposters?.map((user) => (
-            <UserHoverCard user={user}>
+            <UserHoverCard user={user} key={user.id}>
               <CidImage
-                key={user.id}
                 img={user.img}
                 size={32}
                 className="rounded-full ml-[-8px] cursor-pointer"

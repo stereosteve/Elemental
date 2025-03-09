@@ -28,7 +28,7 @@ export default function UserReposts() {
   return (
     <div>
       {reposts.map((stub, idx) => (
-        <div key={idx} className="p-4">
+        <div key={idx}>
           {stub.track && <TrackTile track={stub.track} djContext={djContext} />}
           {stub.playlist && (
             <PlaylistTile playlist={stub.playlist} djContext={djContext} />

@@ -35,7 +35,11 @@ export function UserLayout() {
         src={`https://creatornode2.audius.co/content/${user.bannerImg}/2000x.jpg`}
       />
       <div className="flex gap-4 p-2">
-        {user.handle != myHandle && (
+        {user.handle == myHandle ? (
+          <Button className="absolute top-4 right-4" onClick={() => become()}>
+            logout
+          </Button>
+        ) : (
           <Button
             className="absolute top-4 right-4"
             onClick={() => become(user.handle)}
@@ -43,19 +47,17 @@ export function UserLayout() {
             <DramaIcon />
           </Button>
         )}
-        <CidImage img={user.img} className="ml-4 mt-[-40px]" size={140} />
+        <CidImage img={user.img} className="ml-2 mt-[-40px]" size={140} />
         <div className="flex-1">
           <div className="text-xl font-black">{user.name}</div>
           <div className="flex gap-2 p-2 user-nav">
-            {user.trackCount > 0 && (
-              <NavLink to={urlFor.user(user)} end>
-                Tracks
-              </NavLink>
-            )}
+            <NavLink to={urlFor.user(user)} end>
+              {user.trackCount > 0 ? 'Tracks' : 'Reposts'}
+            </NavLink>
             {(user.playlistCount > 0 || user.albumCount > 0) && (
               <NavLink to={`/${user.handle}/playlists`}>Playlists</NavLink>
             )}
-            {user.repostCount > 0 && (
+            {user.trackCount > 0 && user.repostCount > 0 && (
               <NavLink to={`/${user.handle}/reposts`}>Reposts</NavLink>
             )}
             <NavLink to={`/${user.handle}/comments`}>Comments</NavLink>
@@ -65,13 +67,13 @@ export function UserLayout() {
         </div>
       </div>
 
-      <div className="flex gap-4">
+      <div className="flex gap-4 mx-4">
         <div className="flex-grow">
           <Outlet />
         </div>
 
         <div className="p-8 max-w-[300px]">
-          <p>{user.bio}</p>
+          <p className="text-sm mb-4">{user.bio}</p>
           <p>{user.location}</p>
           <div className="my-4 flex gap-4">
             <Stat label="Tracks" value={user.trackCount} />

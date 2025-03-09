@@ -14,6 +14,7 @@ import { userLibrary } from './db/user-library'
 import { sql } from './db/db'
 import { queryMutuals } from './db/query-mutuals'
 import { readFile } from 'fs/promises'
+import { queryPlayHistory } from './db/user-play-history'
 
 const app = new Hono()
 
@@ -83,12 +84,18 @@ app.get('/api/users/:handle/mutuals', async (c) => {
 })
 
 app.get('/api/my/library', async (c) => {
-  const myId = await getMyId(c)
+  const myId = await getMyId(c, true)
   const before = c.req.query('before')
-  if (!myId) return c.text('not found', 404)
 
   const saves = await userLibrary({ userId: myId, myId, before })
   return c.json(saves)
+})
+
+app.get('/api/my/play-history', async (c) => {
+  const myId = await getMyId(c, true)
+  const before = c.req.query('before')
+  const rows = await queryPlayHistory({ userId: myId, myId, before })
+  return c.json(rows)
 })
 
 app.get('/api/tracks/:id', async (c) => {
@@ -130,10 +137,11 @@ app.onError((err, c) => {
 //
 //
 //
-function getMyId(c: Context) {
+function getMyId(c: Context, required?: boolean) {
   const queryUserId = parseInt(c.req.query('myId') || '')
   if (queryUserId) return queryUserId
   const myHandle = c.req.header('x-my-handle') || c.req.query('myHandle') || ''
+  if (required && !myHandle) throw new Error('myId is required')
   return resolveHandle(myHandle)
 }
 

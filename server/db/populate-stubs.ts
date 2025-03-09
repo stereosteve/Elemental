@@ -9,7 +9,7 @@ type Args = {
 }
 
 export async function populateStubs({ stubs, myId }: Args) {
-  const actorIds = stubs.map((s) => s.actor_id)
+  const actorIds = stubs.map((s) => s.actor_id).filter(Boolean)
 
   const trackIds = stubs
     .filter((s) => s.obj_type == 'track')

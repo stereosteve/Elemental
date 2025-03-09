@@ -31,6 +31,7 @@ createRoot(document.getElementById('root')!).render(
             <Route path="/feed" element={<Feed />} />
             <Route path="/hot" element={<Hot />} />
             <Route path="/library" element={<Library />} />
+            <Route path="/play-history" element={<Library />} />
             <Route path="/explore/genres" element={<ExploreGenres />} />
 
             <Route path=":handle">

@@ -13,7 +13,7 @@ export function Hot() {
   }
 
   return (
-    <div className="container mx-auto">
+    <div className="container mx-auto py-8">
       {data.map((track, idx) => (
         <TrackTile
           key={track.id}

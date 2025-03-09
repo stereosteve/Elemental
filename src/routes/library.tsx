@@ -11,19 +11,24 @@ import { useMe } from '@/state/me'
 import { FeedStub } from '@/types/feed-stub'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router'
+import { Link, useLocation } from 'react-router'
 
 export function Library() {
   const dj = useDJ()
   const { myHandle } = useMe()
   const [fetchAll, setFetchAll] = useState(false)
   const [q, setQ] = useState('')
+  const location = useLocation()
+
+  const endpoint = location.pathname.includes('play-history')
+    ? 'play-history'
+    : 'library'
 
   const { data, fetchNextPage, hasNextPage, isLoading, isFetching } =
     useInfiniteQuery({
-      queryKey: ['library', myHandle],
+      queryKey: [endpoint, myHandle],
       queryFn: async ({ pageParam }) => {
-        const res = await simpleFetch(`/api/my/library?before=${pageParam}`)
+        const res = await simpleFetch(`/api/my/${endpoint}?before=${pageParam}`)
         return res as FeedStub[]
       },
       initialPageParam: '',
@@ -75,12 +80,13 @@ export function Library() {
         <thead>
           <tr>
             <th>Title</th>
-            <th>Artist</th>
             <th>Released</th>
-            <th>Saved</th>
+            <th>On</th>
             {/* <th>Duration</th> */}
             {/* <th>Plays</th> */}
             <th>Reposts</th>
+            <th></th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -104,7 +110,7 @@ export function Library() {
                 </div>
               </td>
               <td>{formatDate(stub.track!.createdAt)}</td>
-              <td>{formatDate(stub.created_at)}</td>
+              <td title={stub.created_at}>{formatDate(stub.created_at)}</td>
               {/* <td>{stub.track!.duration}</td> */}
               {/* <td>{stub.track!.playCount}</td> */}
               <td>{stub.track!.repostCount}</td>
@@ -121,12 +127,16 @@ export function Library() {
 
       <div className="p-12 flex gap-4 justify-center">
         {!isLoading && hasNextPage && (
-          <Button disabled={isFetching} onClick={() => fetchNextPage()}>
-            Load More
-          </Button>
-        )}
+          <>
+            <Button disabled={isFetching} onClick={() => fetchNextPage()}>
+              Load More
+            </Button>
 
-        <Button onClick={() => setFetchAll(true)}>Load All</Button>
+            <Button disabled={isFetching} onClick={() => setFetchAll(true)}>
+              Load All
+            </Button>
+          </>
+        )}
       </div>
     </div>
   )

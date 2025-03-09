@@ -15,7 +15,7 @@ export default function Feed() {
 
   const { data, fetchNextPage, isFetchingNextPage, isLoading } =
     useInfiniteQuery({
-      queryKey: ['feed'],
+      queryKey: ['feed', myHandle],
       queryFn: async ({ pageParam }) => {
         const res = await simpleFetch(`/api/feed?before=${pageParam}`)
         return res as FeedStub[]
@@ -39,11 +39,11 @@ export default function Feed() {
   }
 
   return (
-    <div className="container mx-auto pb-8">
+    <div className="container mx-auto py-8">
       <PageTitle title="Feed" />
 
       {feed.map((stub) => (
-        <div key={stub.created_at} className="p-2 border m-2">
+        <div key={stub.created_at} className="">
           {stub.track && <TrackTile track={stub.track} djContext={djContext} />}
           {stub.playlist && (
             <PlaylistTile playlist={stub.playlist} djContext={djContext} />
@@ -51,11 +51,13 @@ export default function Feed() {
         </div>
       ))}
 
-      {!isLoading && feed.length > 0 && (
-        <Button disabled={isFetchingNextPage} onClick={() => fetchNextPage()}>
-          More
-        </Button>
-      )}
+      <div className="p-12 flex gap-4 justify-center">
+        {!isLoading && feed.length > 0 && (
+          <Button disabled={isFetchingNextPage} onClick={() => fetchNextPage()}>
+            More
+          </Button>
+        )}
+      </div>
     </div>
   )
 }

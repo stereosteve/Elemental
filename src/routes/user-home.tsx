@@ -3,14 +3,17 @@ import { DJContext } from '@/state/dj'
 import { TrackRow } from '@/types/track-row'
 import { useQuery } from '@tanstack/react-query'
 import { useParams } from 'react-router'
+import UserReposts from './user-reposts'
 
 export function UserHome() {
   const { handle } = useParams()
-  const { data: tracks } = useQuery<TrackRow[]>({
+  const { data: tracks, isLoading } = useQuery<TrackRow[]>({
     queryKey: [`/api/users/${handle}/tracks`],
   })
 
-  if (!tracks) return null
+  if (isLoading) return null
+
+  if (!tracks?.length) return <UserReposts />
 
   const djc: DJContext = {
     path: location.pathname,
