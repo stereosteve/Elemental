@@ -1,55 +1,65 @@
-import React, { useEffect, useState } from 'react'
-import * as duckdb from '@duckdb/duckdb-wasm'
+import { simpleFetch } from '@/client'
 import { Input } from '@/components/ui/input'
 import { loadDuckDB } from '@/lib/loadDuckDB'
 import { useDJ } from '@/state/dj'
-import { simpleFetch } from '@/client'
-import { TrackRow } from '@/types/track-row'
+import * as duckdb from '@duckdb/duckdb-wasm'
+import { useQuery } from '@tanstack/react-query'
+import { useDebounce } from '@uidotdev/usehooks'
+import React, { useEffect, useState } from 'react'
 
 export const Duck: React.FC = () => {
   const dj = useDJ()
   const [q, setQ] = useState('')
+
   const [db, setDb] = useState<duckdb.AsyncDuckDB | null>(null)
-  const [data, setData] = useState<Record<string, string>[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
+
+  const q2 = useDebounce(q, 300)
+
+  const { data } = useQuery({
+    queryKey: [q2, loading],
+    queryFn: async () => {
+      if (!db) return []
+
+      console.log('query', q2)
+      const conn = await db.connect()
+      const query = await conn.query(`
+        SELECT * FROM 'tracks.csv'
+        where
+          user_handle ilike '%${q2}%'
+          OR user_name ilike '%${q2}%'
+          OR title ilike '%${q2}%'
+        order by repost_count desc
+        limit 100
+      `)
+      const result = query.toArray().map((row) => row.toJSON())
+      await conn.close()
+      return result as Record<string, string>[]
+    },
+  })
 
   useEffect(() => {
     try {
       setLoading(true)
       loadDuckDB().then(async (db) => {
-        const resp = await fetch('/howdy.csv')
+        const resp = await fetch('/data/tracks2.csv')
         const data = await resp.text()
         await db.registerFileText(`tracks.csv`, data)
         setDb(db)
+        setLoading(false)
       })
     } catch (err) {
       setError((err as Error).message)
-    } finally {
-      setLoading(false)
     }
   }, [])
 
-  useEffect(() => {
-    db?.connect().then(async (conn) => {
-      const query = await conn.query(`
-        SELECT * FROM 'tracks.csv'
-        where
-          handle ilike '%${q}%'
-          OR name ilike '%${q}%'
-          OR title ilike '%${q}%'
-        limit 100
-      `)
-      const result = query.toArray().map((row) => row.toJSON())
-      setData(result)
-
-      await conn.close()
-    })
-  }, [db, q])
-
   function playTrack({ track_id }: Record<string, string>) {
     simpleFetch(`/api/tracks/${track_id}`).then((resp) => {
-      dj.play(resp.track)
+      dj.play(resp.track, {
+        path: location.pathname,
+        items: [resp.track],
+      })
     })
   }
 
@@ -60,7 +70,7 @@ export const Duck: React.FC = () => {
 
       <Input value={q} onChange={(e) => setQ(e.target.value)} />
 
-      {!loading && !error && data.length > 0 && (
+      {data && data.length > 0 && (
         <table className="library-table">
           <thead>
             <tr>
