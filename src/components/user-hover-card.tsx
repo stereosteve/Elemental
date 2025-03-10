@@ -61,11 +61,7 @@ export function UserHoverCard(props: Props) {
 
           <div className="p-4">
             <p className="text-sm mb-4">{user.bio}</p>
-            <FollowButton
-              className="w-full"
-              handle={user.handle}
-              isFollowed={user.isFollowed}
-            />
+            <FollowButton className="w-full" user={user} />
           </div>
         </HoverCardContent>
       )}

@@ -1,5 +1,6 @@
 import { CurrentUser } from '@/components/current-user'
 import { Player } from '@/components/player'
+import { Toaster } from '@/components/ui/sonner'
 import { useIsFetching } from '@tanstack/react-query'
 import {
   AudioWaveformIcon,
@@ -45,6 +46,7 @@ export function GlobalLayout() {
       <div className="ml-16">
         <Outlet />
       </div>
+      <Toaster position="top-center" richColors />
       <Player />
     </div>
   )

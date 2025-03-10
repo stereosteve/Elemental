@@ -81,7 +81,7 @@ export function UserLayout() {
             <Stat label="Following" value={user.followingCount} />
           </div>
 
-          <FollowButton handle={user.handle} isFollowed={user.isFollowed} />
+          <FollowButton user={user} />
           {user.isFollower && <Button>Follows Me</Button>}
 
           <Mutuals handle={user.handle} />

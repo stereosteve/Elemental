@@ -7,3 +7,7 @@
 
 should have a play tile version of cid image
   with the play / pause logo based on current play state
+
+
+TRACK HOVER CARD
+  shows stats, release date, known reposters, etc.

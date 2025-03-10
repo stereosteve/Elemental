@@ -1,6 +1,5 @@
 import { UserRow } from '@/types/user-row'
 import { sql } from './db'
-import { keyBy } from '@/lib/keyBy'
 
 type UserQuery = {
   q?: string
@@ -47,8 +46,7 @@ export async function queryUsers({ handle, ids, q, limit, myId }: UserQuery) {
 
   // personalize
   if (myId) {
-    const usersById = keyBy(users, 'id')
-    const userIds = Object.keys(usersById)
+    const userIds = users.map((u) => u.id)
     const [followers, followed] = await Promise.all([
       sql`
         select follower_user_id from follows
@@ -64,8 +62,13 @@ export async function queryUsers({ handle, ids, q, limit, myId }: UserQuery) {
         `.values(),
     ])
 
-    followers.flat().map((id) => (usersById[id].isFollower = true))
-    followed.flat().map((id) => (usersById[id].isFollowed = true))
+    const followerSet = new Set(followers.flat())
+    const followedSet = new Set(followed.flat())
+
+    for (const user of users) {
+      user.isFollower = followerSet.has(user.id)
+      user.isFollowed = followedSet.has(user.id)
+    }
   }
 
   return users
