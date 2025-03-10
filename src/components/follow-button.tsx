@@ -60,14 +60,13 @@ export function FollowButton({ user, className }: Props) {
   if (myHandle == user.handle) return null
 
   return (
-    <div>
-      <Button
-        className={className}
-        onClick={() => followMutation.mutate(!isFollowed)}
-        disabled={isBusy}
-      >
-        {isFollowed ? 'Following' : 'Follow'}
-      </Button>
-    </div>
+    <Button
+      className={className}
+      onClick={() => followMutation.mutate(!isFollowed)}
+      disabled={isBusy}
+      variant={isFollowed ? 'ghost' : 'default'}
+    >
+      {isFollowed ? 'Following' : 'Follow'}
+    </Button>
   )
 }

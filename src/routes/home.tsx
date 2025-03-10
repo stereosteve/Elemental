@@ -1,3 +1,4 @@
+import { LoginModal } from '@/components/login-modal'
 import { PageTitle } from '@/components/page-title'
 import { UserSearch } from '@/components/user-search'
 import { useMe } from '@/state/me'
@@ -13,6 +14,8 @@ export function Home() {
           me.become(user.handle)
         }}
       />
+
+      <LoginModal />
     </div>
   )
 }

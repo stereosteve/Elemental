@@ -81,8 +81,14 @@ export function UserLayout() {
             <Stat label="Following" value={user.followingCount} />
           </div>
 
-          <FollowButton user={user} />
-          {user.isFollower && <Button>Follows Me</Button>}
+          <div className="flex flex-col gap-2 my-4">
+            <FollowButton user={user} />
+            {user.isFollower && (
+              <Button disabled variant="outline">
+                Follows Me
+              </Button>
+            )}
+          </div>
 
           <Mutuals handle={user.handle} />
         </div>
