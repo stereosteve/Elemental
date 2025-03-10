@@ -2,24 +2,25 @@ import { pipeline } from 'node:stream/promises'
 import { createWriteStream } from 'node:fs'
 import { sql } from 'server/db/db'
 import { mkdir } from 'node:fs/promises'
+import zlib from 'node:zlib'
 
-await mkdir('public/data', { recursive: true })
+await mkdir('data', { recursive: true })
 
 async function queryToFile(file: string, rawSql: any) {
   console.log('query', file)
-  await pipeline(rawSql, createWriteStream(`public/data/${file}`))
+  await pipeline(rawSql, zlib.createGzip(), createWriteStream(`data/${file}`))
 }
 
 await queryToFile(
-  'tracks2.csv',
+  'tracks6.csv.gz',
   await sql`copy (
     select
       owner_id as user_id,
       track_id,
       title,
+      coalesce(cover_art_sizes, cover_art) as img,
       aggt.repost_count,
 
-      users.user_id,
       handle as user_handle,
       name as user_name
     from

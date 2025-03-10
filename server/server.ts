@@ -15,8 +15,10 @@ import { sql } from './db/db'
 import { queryMutuals } from './db/query-mutuals'
 import { readFile } from 'fs/promises'
 import { queryPlayHistory } from './db/user-play-history'
+// import { compress } from 'hono/compress'
 
 const app = new Hono()
+// app.use(compress())
 
 app.use(logger())
 
@@ -126,6 +128,17 @@ app.get('/api/explore/tracks', async (c) => {
 //
 // SPA Handler
 //
+
+app.use(
+  '/data/*',
+  async (c, next) => {
+    c.header('Content-Type', 'text/csv')
+    c.header('Content-Encoding', 'gzip')
+    await next()
+  },
+  serveStatic({ root: './' })
+)
+
 app.use(serveStatic({ root: './dist' }))
 const indexHtml = readFile('dist/index.html', 'utf8')
 app.get('*', async (c) => c.html(await indexHtml))
