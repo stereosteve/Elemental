@@ -4,6 +4,7 @@ import { queryTracks } from './query-tracks'
 import { keyBy } from '@/lib/keyBy'
 import { queryIsReposted } from './query-is-reposted'
 import { queryIsSaved } from './query-is-saved'
+import { knownRepostersBulk } from './known-reposters'
 
 type PlaylistQuery = {
   ids?: number[]
@@ -57,14 +58,20 @@ export async function queryPlaylists({ ids, userId, myId }: PlaylistQuery) {
     // todo: known reposters
     const ids = playlists.map((p) => p.id)
 
-    const [saveSet, repostSet] = await Promise.all([
+    const [saveSet, repostSet, known] = await Promise.all([
       queryIsSaved({ myId, ids, isTrack: false }),
       queryIsReposted({ myId, ids, isTrack: false }),
+      knownRepostersBulk({
+        myId,
+        isTrack: false,
+        ids: ids,
+      }),
     ])
 
     for (const playlist of playlists) {
       playlist.isReposted = repostSet.has(playlist.id)
       playlist.isSaved = saveSet.has(playlist.id)
+      playlist.knownReposters = known[playlist.id]
     }
   }
 

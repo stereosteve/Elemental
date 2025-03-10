@@ -1,4 +1,5 @@
 import type { TrackRow } from './track-row'
+import { UserRow } from './user-row'
 
 export type PlaylistRow = {
   type: 'playlist'
@@ -24,4 +25,5 @@ export type PlaylistRow = {
 
   isSaved: boolean
   isReposted: boolean
+  knownReposters?: UserRow[]
 }

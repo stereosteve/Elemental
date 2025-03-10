@@ -27,6 +27,9 @@ export function UserHoverCard(props: Props) {
   const { data } = useQuery<{ user: UserRow }>({
     queryKey: [`/api/users/${propUser.handle}`],
     enabled: isOpen,
+    meta: {
+      quiet: true,
+    },
   })
 
   const user = data?.user

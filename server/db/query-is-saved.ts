@@ -12,7 +12,7 @@ export async function queryIsSaved({ myId, ids, isTrack }: Args) {
     from saves
     where user_id = ${myId}
       and save_item_id in ${sql(ids)}
-      ${isTrack ? sql`and save_type = 'track'` : sql`and save_type != 'track'`}
+      and ${isTrack ? sql`save_type = 'track'` : sql`save_type != 'track'`}
       and is_delete = false
   `.values()
   return new Set(mySaves.flat()) as Set<number>

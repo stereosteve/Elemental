@@ -1,7 +1,7 @@
 import { useDJ, type DJContext } from '@/state/dj'
 import type { PlaylistRow } from '@/types/playlist-row'
 import clsx from 'clsx'
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import { CidImage } from './cid-image'
 import { RepostButton } from './repost-button'
 import { SaveButton } from './save-button'
@@ -15,6 +15,7 @@ type PlaylistTileProps = {
 }
 
 export function PlaylistTile({ playlist, djContext }: PlaylistTileProps) {
+  const navigate = useNavigate()
   const { myHandle } = useMe()
   const dj = useDJ()
 
@@ -44,6 +45,19 @@ export function PlaylistTile({ playlist, djContext }: PlaylistTileProps) {
               <RepostButton isReposted={playlist.isReposted} />
             </>
           )}
+
+          <div className="pl-[8px]">
+            {playlist.knownReposters?.map((user) => (
+              <UserHoverCard user={user} key={user.id}>
+                <CidImage
+                  img={user.img}
+                  size={32}
+                  className="rounded-full ml-[-8px] cursor-pointer"
+                  onClick={() => navigate(urlFor.user(user))}
+                />
+              </UserHoverCard>
+            ))}
+          </div>
         </div>
       </div>
 

@@ -7,11 +7,11 @@ import { sql } from './db'
 
 type Args = {
   myId: number
-  type: string
+  isTrack: boolean
   ids: number[]
 }
 
-export async function knownRepostersBulk({ myId, type, ids }: Args) {
+export async function knownRepostersBulk({ myId, isTrack, ids }: Args) {
   const rows = await sql`
     with top_reposters as (
       select
@@ -26,7 +26,7 @@ export async function knownRepostersBulk({ myId, type, ids }: Args) {
         where follower_user_id = ${myId}
           and is_delete = false
       )
-      AND repost_type = ${type}
+      AND ${isTrack ? sql`repost_type = 'track'` : sql`repost_type != 'track'`}
       AND repost_item_id in ${sql(ids)}
       AND is_delete = false
     )

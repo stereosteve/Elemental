@@ -54,7 +54,7 @@ export async function queryTracks({ myId, ids, userId }: TracksQuery) {
       queryIsReposted({ myId, ids, isTrack: true }),
       knownRepostersBulk({
         myId,
-        type: 'track',
+        isTrack: true,
         ids: ids,
       }),
     ])

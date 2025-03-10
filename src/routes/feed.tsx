@@ -15,7 +15,7 @@ export default function Feed() {
 
   const { data, fetchNextPage, isFetchingNextPage, isLoading } =
     useInfiniteQuery({
-      queryKey: ['feed', myHandle],
+      queryKey: ['feed'],
       queryFn: async ({ pageParam }) => {
         const res = await simpleFetch(`/api/feed?before=${pageParam}`)
         return res as FeedStub[]

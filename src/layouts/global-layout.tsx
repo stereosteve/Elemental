@@ -23,7 +23,11 @@ const navItems = [
 ]
 
 export function GlobalLayout() {
-  const isFetching = useIsFetching()
+  // use meta.quiet to surpress global loading indicator
+  // (e.g. UserHoverCard)
+  const isFetching = useIsFetching({
+    predicate: (q) => !q.meta?.quiet,
+  })
 
   return (
     <div>

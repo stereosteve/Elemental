@@ -13,6 +13,10 @@ export const meStore = createStore<MeStore>()(
       return {
         become: (myHandle) => {
           set({ myHandle })
+          // queryClient sets x-my-handle
+          // which might not be included in the queryKey
+          // so clear all caches here...
+          queryClient.clear()
           queryClient.invalidateQueries()
         },
       }
