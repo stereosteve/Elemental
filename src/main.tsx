@@ -18,6 +18,7 @@ import { UserPlaylists } from './routes/user-playlists'
 import UserReposts from './routes/user-reposts'
 import { Library } from './routes/library'
 import { Derp } from './routes/derp'
+import { Duck } from './routes/duck'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -28,6 +29,7 @@ createRoot(document.getElementById('root')!).render(
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<h1>About</h1>} />
             <Route path="/derp" element={<Derp />} />
+            <Route path="/duck" element={<Duck />} />
             <Route path="/feed" element={<Feed />} />
             <Route path="/hot" element={<Hot />} />
             <Route path="/library" element={<Library />} />

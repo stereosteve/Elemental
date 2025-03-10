@@ -9,6 +9,7 @@ import {
   HistoryIcon,
   Loader2Icon,
   MountainIcon,
+  Table2Icon,
   WindIcon,
 } from 'lucide-react'
 import { NavLink, Outlet } from 'react-router'
@@ -20,6 +21,7 @@ const navItems = [
   { to: '/library', icon: <HeartIcon /> },
   { to: '/play-history', icon: <HistoryIcon /> },
   { to: '/explore/genres', icon: <AudioWaveformIcon /> },
+  { to: '/duck', icon: <Table2Icon /> },
 ]
 
 export function GlobalLayout() {
