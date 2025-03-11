@@ -4,6 +4,7 @@ import { Link } from 'react-router'
 import { useQuery } from '@tanstack/react-query'
 import { PageTitle } from '@/components/page-title'
 import { urlFor } from '@/lib/urlFor'
+import { UserHoverCard } from '@/components/user-hover-card'
 
 type Resp = {
   genre: string
@@ -26,7 +27,7 @@ export default function ExploreGenres() {
             {g.users.map((user) => (
               <Link to={urlFor.user(user)} key={user.id}>
                 <CidImage img={user.img} size={150} />
-                <div>{user.name}</div>
+                <UserHoverCard user={user} />
               </Link>
             ))}
           </div>

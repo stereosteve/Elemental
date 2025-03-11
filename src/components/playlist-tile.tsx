@@ -1,12 +1,13 @@
+import { urlFor } from '@/lib/urlFor'
 import { useDJ, type DJContext } from '@/state/dj'
+import { useMe } from '@/state/me'
 import type { PlaylistRow } from '@/types/playlist-row'
 import clsx from 'clsx'
-import { Link, useNavigate } from 'react-router'
+import { useNavigate } from 'react-router'
 import { CidImage } from './cid-image'
 import { RepostButton } from './repost-button'
 import { SaveButton } from './save-button'
-import { useMe } from '@/state/me'
-import { urlFor } from '@/lib/urlFor'
+import { ScrollArea } from './ui/scroll-area'
 import { UserHoverCard } from './user-hover-card'
 
 type PlaylistTileProps = {
@@ -22,8 +23,14 @@ export function PlaylistTile({ playlist, djContext }: PlaylistTileProps) {
   const isPlaying = dj.isPlaying({ playlist, djContext })
 
   return (
-    <div className={clsx('p-2 px-4', isPlaying ? '' : '')} key={playlist.id}>
-      <div className="flex gap-4 items-center mb-4">
+    <div
+      className={clsx(
+        'border rounded-md shadow-md mb-4 bg-background',
+        isPlaying ? '' : ''
+      )}
+      key={playlist.id}
+    >
+      <div className="flex gap-4 items-center p-4">
         <CidImage
           img={playlist.img}
           size={80}
@@ -61,30 +68,25 @@ export function PlaylistTile({ playlist, djContext }: PlaylistTileProps) {
         </div>
       </div>
 
-      {playlist.tracks.map((track, idx) => (
-        <div
-          className={clsx(
-            'rounded-md p-1 px-2',
-            dj.isPlaying({ playlist, track, djContext }) ? 'bg-secondary' : ''
-          )}
-          key={idx}
-        >
-          <div className="flex gap-2" key={track.id}>
+      <ScrollArea className="h-64">
+        {playlist.tracks.map((track, idx) => (
+          <div
+            className={clsx(
+              'p-1 px-2 border-t text-sm',
+              'flex gap-2',
+              dj.isPlaying({ playlist, track, djContext }) ? 'bg-accent' : ''
+            )}
+            key={idx}
+            onClick={() => dj.playPlaylist(playlist, track, djContext)}
+          >
             <div className="text-muted-foreground">{idx + 1}.</div>
-            <div>
-              <div
-                className="font-bold cursor-pointer"
-                onClick={() => dj.playPlaylist(playlist, track, djContext)}
-              >
-                {track.title}
-              </div>
-              <div className="text-muted-foreground">
-                <Link to={urlFor.user(track.user)}>{track.user.name}</Link>
-              </div>
+            <div className="flex flex-grow gap-2">
+              <div className="font-bold cursor-pointer">{track.title}</div>
+              <UserHoverCard user={track.user} />
             </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </ScrollArea>
     </div>
   )
 }

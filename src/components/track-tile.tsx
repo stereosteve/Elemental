@@ -26,8 +26,8 @@ export function TrackTile({ track, djContext, imgSize, rank }: TrackTileProps) {
   return (
     <div
       className={clsx(
-        'flex items-center p-2 px-4 gap-4 rounded-md',
-        isPlaying && 'bg-secondary'
+        'flex items-center p-2 px-4 gap-4 rounded-md border shadow-md mb-4 bg-background',
+        isPlaying && 'bg-amber-100 border-amber-500 border-2'
       )}
       key={track.id}
     >

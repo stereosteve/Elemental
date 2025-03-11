@@ -74,7 +74,7 @@ export function Library() {
           setFetchAll(true)
           setQ(e.target.value)
         }}
-        className="p-6"
+        className="p-6 bg-background"
       />
       <table className="library-table w-full mt-8">
         <thead>

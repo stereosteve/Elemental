@@ -34,7 +34,7 @@ export function Player() {
   return (
     <>
       <div style={{ height: 90 }}></div>
-      <div className="fixed bottom-0 w-full p-2 bg-background border-t">
+      <div className="fixed bottom-0 left-16 right-0 p-2 bg-background border-t">
         <div className="flex gap-2 items-center">
           <CidImage img={track.img} size={50} />
           <div>

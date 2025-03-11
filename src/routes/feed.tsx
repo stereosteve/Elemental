@@ -39,7 +39,7 @@ export default function Feed() {
   }
 
   return (
-    <div className="container mx-auto py-8">
+    <div className="max-w-[900px] mx-auto py-8">
       <PageTitle title="Feed" />
 
       {feed.map((stub) => (

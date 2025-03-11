@@ -10,16 +10,17 @@
 
 .user-nav {
   a {
-    @apply p-2 rounded-md;
+    @apply p-2 px-4 rounded-md;
   }
   a.active {
-    @apply bg-secondary;
+    @apply bg-background;
   }
 }
 
 .library-table {
+  @apply bg-background;
   th {
-    @apply border-t;
+    @apply p-4 text-left border-b;
   }
   td {
     @apply p-4 border-b;

@@ -34,7 +34,7 @@ export function GlobalLayout() {
       {isFetching > 0 && (
         <Loader2Icon className="animate-spin fixed top-4 right-12" size={48} />
       )}
-      <div className="nav-rail z-10 bg-background">
+      <div className="nav-rail z-10">
         <CurrentUser />
 
         {navItems.map((i) => (
@@ -47,7 +47,7 @@ export function GlobalLayout() {
           </NavLink>
         ))}
       </div>
-      <div className="ml-16">
+      <div className="ml-16 bg-secondary min-h-screen">
         <Outlet />
       </div>
       <Toaster position="top-center" richColors />
