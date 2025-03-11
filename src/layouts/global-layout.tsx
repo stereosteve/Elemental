@@ -1,5 +1,6 @@
 import { CurrentUser } from '@/components/current-user'
 import { Player } from '@/components/player'
+import { ThemeToggle } from '@/components/theme-toggle'
 import { Toaster } from '@/components/ui/sonner'
 import { useIsFetching } from '@tanstack/react-query'
 import {
@@ -46,6 +47,8 @@ export function GlobalLayout() {
             {i.icon}
           </NavLink>
         ))}
+
+        <ThemeToggle />
       </div>
       <div className="ml-16 bg-secondary min-h-screen">
         <Outlet />

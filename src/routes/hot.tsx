@@ -13,7 +13,7 @@ export function Hot() {
   }
 
   return (
-    <div className="p-4 md:p-8 max-w-[900px] mx-auto">
+    <div className=" max-w-[900px] mx-auto">
       {data.map((track, idx) => (
         <TrackTile
           key={track.id}
