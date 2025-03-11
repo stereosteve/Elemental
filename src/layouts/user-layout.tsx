@@ -67,7 +67,7 @@ export function UserLayout() {
         </div>
       </div>
 
-      <div className="flex gap-4 mx-4">
+      <div className="flex gap-4 mx-4 max-w-[1200px]">
         <div className="flex-grow">
           <Outlet />
         </div>

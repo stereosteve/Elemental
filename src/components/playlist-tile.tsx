@@ -72,7 +72,7 @@ export function PlaylistTile({ playlist, djContext }: PlaylistTileProps) {
         {playlist.tracks.map((track, idx) => (
           <div
             className={clsx(
-              'p-1 px-2 border-t text-sm',
+              'p-2 px-2 border-t text-sm',
               'flex gap-2',
               dj.isPlaying({ playlist, track, djContext }) ? 'bg-accent' : ''
             )}

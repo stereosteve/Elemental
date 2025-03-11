@@ -2,28 +2,41 @@ import { CurrentUser } from '@/components/current-user'
 import { Player } from '@/components/player'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { Toaster } from '@/components/ui/sonner'
+import { useMe } from '@/state/me'
 import { useIsFetching } from '@tanstack/react-query'
 import {
   AudioWaveformIcon,
-  FlameIcon,
   HeartIcon,
   HistoryIcon,
   Loader2Icon,
   MountainIcon,
-  WindIcon,
+  TrendingUpIcon,
 } from 'lucide-react'
-import { NavLink, Outlet } from 'react-router'
-
-const navItems = [
-  { to: '/', icon: <MountainIcon /> },
-  { to: '/feed', icon: <WindIcon /> },
-  { to: '/hot', icon: <FlameIcon /> },
-  { to: '/library', icon: <HeartIcon /> },
-  { to: '/play-history', icon: <HistoryIcon /> },
-  { to: '/explore/genres', icon: <AudioWaveformIcon /> },
-]
+import { useEffect } from 'react'
+import { NavLink, Outlet, useLocation } from 'react-router'
 
 export function GlobalLayout() {
+  const { myHandle } = useMe()
+  const location = useLocation()
+
+  let navItems = [
+    { to: '/', icon: <MountainIcon /> },
+    { to: '/explore/genres', icon: <AudioWaveformIcon /> },
+  ]
+
+  if (myHandle) {
+    navItems = navItems.concat([
+      { to: '/hot', icon: <TrendingUpIcon /> },
+      { to: '/library', icon: <HeartIcon /> },
+      { to: '/play-history', icon: <HistoryIcon /> },
+    ])
+  }
+
+  useEffect(() => {
+    console.log(location)
+    window.scrollTo(0, 0)
+  }, [location])
+
   // use meta.quiet to surpress global loading indicator
   // (e.g. UserHoverCard)
   const isFetching = useIsFetching({
@@ -35,9 +48,7 @@ export function GlobalLayout() {
       {isFetching > 0 && (
         <Loader2Icon className="animate-spin fixed top-4 right-12" size={48} />
       )}
-      <div className="nav-rail z-10">
-        <CurrentUser />
-
+      <div className="nav-rail z-10 flex flex-col">
         {navItems.map((i) => (
           <NavLink
             key={i.to}
@@ -48,7 +59,10 @@ export function GlobalLayout() {
           </NavLink>
         ))}
 
+        <div className="flex-grow" />
+
         <ThemeToggle />
+        <CurrentUser />
       </div>
       <div className="ml-16 bg-secondary min-h-screen">
         <Outlet />

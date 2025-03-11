@@ -10,6 +10,7 @@ import {
 } from './ui/dialog'
 import { Input } from './ui/input'
 import { useMe } from '@/state/me'
+import { CircleUserRoundIcon } from 'lucide-react'
 
 const someHandles = ['stereosteve', 'isaacsolo', 'rayjacobson']
 
@@ -25,17 +26,18 @@ export function LoginModal() {
   }
 
   if (myHandle) {
-    return (
-      <Button variant="destructive" onClick={() => become()}>
-        Log Out
-      </Button>
-    )
+    return null
   }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline">Log In</Button>
+        <Button
+          variant="link"
+          className="flex items-center justify-center w-16 h-16"
+        >
+          <CircleUserRoundIcon />
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>

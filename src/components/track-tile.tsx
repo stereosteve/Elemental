@@ -1,13 +1,13 @@
+import { urlFor } from '@/lib/urlFor'
 import { useDJ, type DJContext } from '@/state/dj'
+import { useMe } from '@/state/me'
 import type { TrackRow } from '@/types/track-row'
 import clsx from 'clsx'
-import { Link, useNavigate } from 'react-router'
+import { LockIcon } from 'lucide-react'
+import { useNavigate } from 'react-router'
 import { CidImage } from './cid-image'
 import { RepostButton } from './repost-button'
 import { SaveButton } from './save-button'
-import { useMe } from '@/state/me'
-import { urlFor } from '@/lib/urlFor'
-import { LockIcon } from 'lucide-react'
 import { UserHoverCard } from './user-hover-card'
 
 type TrackTileProps = {
@@ -45,8 +45,11 @@ export function TrackTile({ track, djContext, imgSize, rank }: TrackTileProps) {
       </div>
 
       <div className="flex flex-col flex-grow">
-        <div className="text-xl font-bold">
-          <Link to={urlFor.track(track)}>{track.title}</Link>
+        <div
+          className="text-xl font-bold cursor-pointer"
+          onClick={() => dj.play(track, djContext)}
+        >
+          {track.title}
         </div>
         <div className="flex gap-2">
           <UserHoverCard user={track.user} />

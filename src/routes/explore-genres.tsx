@@ -1,6 +1,6 @@
 import type { UserRow } from '@/types/user-row'
 import { CidImage } from '@/components/cid-image'
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import { useQuery } from '@tanstack/react-query'
 import { PageTitle } from '@/components/page-title'
 import { urlFor } from '@/lib/urlFor'
@@ -12,6 +12,7 @@ type Resp = {
 }[]
 
 export default function ExploreGenres() {
+  const navigate = useNavigate()
   const { data } = useQuery<Resp>({ queryKey: [`/api/explore/genres`] })
   if (!data) return null
   const genres = data
@@ -25,10 +26,25 @@ export default function ExploreGenres() {
               {g.genre}
             </div>
             {g.users.map((user) => (
-              <Link to={urlFor.user(user)} key={user.id}>
-                <CidImage img={user.img} size={150} />
-                <UserHoverCard user={user} />
-              </Link>
+              <div
+                key={user.id}
+                onClick={() => navigate(urlFor.user(user))}
+                className="cursor-pointer relative h-[150px] w-[150px] rounded-md shadow-md overflow-clip"
+              >
+                <CidImage
+                  img={user.img}
+                  size={150}
+                  className="cursor-pointer"
+                />
+                <div
+                  className="
+                  absolute bottom-0 w-full
+                  bg-black opacity-80 text-white
+                   p-1 overflow-hidden text-center"
+                >
+                  <UserHoverCard user={user} />
+                </div>
+              </div>
             ))}
           </div>
         </div>
