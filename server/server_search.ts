@@ -4,8 +4,32 @@ import { QueryContainer } from '@opensearch-project/opensearch/api/_types/_commo
 
 const app = new Hono()
 
+const FIELD_MAPPING: Record<string, string> = {
+  title: 'title.keyword',
+  artist: 'user.name.keyword',
+  genre: 'genre.keyword',
+  musicalKey: 'musicalKey',
+}
+
 app.get('/api/search', async (c) => {
   const from = parseInt(c.req.query('from') || '0')
+
+  let sort: Record<string, string>[] = [
+    { repostCount: 'desc' },
+    // { 'title.keyword': 'asc' },
+  ]
+
+  const querySort = c.req.query('sort')
+  if (querySort) {
+    const sortObjs = JSON.parse(querySort) as { id: string; desc: boolean }[]
+    if (sortObjs.length) {
+      sort = sortObjs.map((row) => {
+        const k = FIELD_MAPPING[row.id] || row.id
+        return { [k]: row.desc ? 'desc' : 'asc' }
+      })
+      console.log(sort)
+    }
+  }
 
   // const dsl = buildQueryContainer(c)
   // return c.json(dsl)
@@ -16,17 +40,11 @@ app.get('/api/search', async (c) => {
       query: buildQueryContainer(c),
       size: 200,
       from: from,
-      sort: ['user.name.keyword', 'title.keyword'],
+      sort,
     },
   })
   return c.json(found)
 })
-
-const FIELD_MAPPING: Record<string, string> = {
-  genre: 'genre.keyword',
-  artist: 'user.name.keyword',
-  musical_key: 'musicalKey',
-}
 
 app.get('/api/search/facet', async (c) => {
   const fields = Object.keys(FIELD_MAPPING)
@@ -64,7 +82,7 @@ function buildQueryContainer(c: Context, omitFilter?: string) {
       must: [
         {
           simple_query_string: {
-            query: c.req.query('q') || '' + '*',
+            query: (c.req.query('q') || '') + '*',
           },
         },
       ],

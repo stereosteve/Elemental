@@ -23,6 +23,7 @@ import { Input } from '@/components/ui/input'
 import { useSearchParams } from 'react-router'
 import { TrackRow } from '@/types/track-row'
 import { DJContext, useDJ } from '@/state/dj'
+import clsx from 'clsx'
 
 const fetchSize = 200
 
@@ -48,8 +49,15 @@ export default function CoolTable() {
   function querySet(key: string, val: string) {
     searchParams.set(key, val)
     setSearchParams(searchParams)
+  }
 
-    // setQ(q + ` ${key}.keyword:${val}`)
+  function queryToggle(key: string, val: string) {
+    if (searchParams.has(key, val)) {
+      searchParams.delete(key, val)
+    } else {
+      searchParams.append(key, val)
+    }
+    setSearchParams(searchParams)
   }
 
   const [q, setQ] = React.useState('')
@@ -68,6 +76,7 @@ export default function CoolTable() {
       },
       {
         header: 'Artist',
+        accessorKey: 'artist',
         size: 200,
         cell: ({ row }) => (
           <UserHoverCard
@@ -101,6 +110,11 @@ export default function CoolTable() {
   // todo... add (debounced) q to search params?
   const searchParamString = searchParams.toString()
 
+  React.useEffect(() => {
+    console.log(sorting)
+    // querySet('sort', JSON.stringify(Object.values(sorting)))
+  }, [sorting])
+
   const { data: facets } = useQuery<FacetResponse>({
     queryKey: [`/api/search/facet?${searchParamString}`],
     refetchOnWindowFocus: false,
@@ -117,10 +131,11 @@ export default function CoolTable() {
         sorting, //refetch when sorting changes
       ],
       queryFn: async ({ pageParam = 0 }) => {
-        console.log({ sorting })
         const start = (pageParam as number) * fetchSize
+        const sort = encodeURIComponent(JSON.stringify(sorting))
+
         const fetchedData = await simpleFetch(
-          `/api/search?from=${start.toString()}&` + searchParamString
+          `/api/search?from=${start}&sort=${sort}&` + searchParamString
         )
         const tracks = fetchedData.body.hits.hits.map((h: any) => h._source)
         // console.log(topGenres)
@@ -216,6 +231,26 @@ export default function CoolTable() {
     return <>Loading...</>
   }
 
+  function FilterBox({ fieldName }: { fieldName: keyof FacetResponse }) {
+    return (
+      <div className="bg-background p-2 flex-1">
+        {facets![fieldName].map((b) => (
+          <div
+            key={b.key}
+            onClick={() => queryToggle(fieldName, b.key)}
+            className={clsx(
+              'flex p-1',
+              searchParams.has(fieldName, b.key) && 'bg-amber-300'
+            )}
+          >
+            <div className="flex-grow">{b.key}</div>
+            <div>{b.doc_count}</div>
+          </div>
+        ))}
+      </div>
+    )
+  }
+
   return (
     <div className="p-4">
       <div>
@@ -231,22 +266,9 @@ export default function CoolTable() {
       </div>
 
       {/* FILTER BOXES */}
-      <div className="flex gap-4">
-        <div className="border p-2">
-          {facets?.genre.map((b) => (
-            <div key={b.key} onClick={() => querySet('genre', b.key)}>
-              {b.key} ... {b.doc_count}
-            </div>
-          ))}
-        </div>
-
-        <div className="bg-background p-2">
-          {facets?.artist.map((b) => (
-            <div key={b.key} onClick={() => querySet('artist', b.key)}>
-              {b.key} ... {b.doc_count}
-            </div>
-          ))}
-        </div>
+      <div className="flex gap-4 my-4">
+        <FilterBox fieldName="genre" />
+        <FilterBox fieldName="artist" />
       </div>
 
       {/* HIT COUNT */}

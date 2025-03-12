@@ -64,6 +64,7 @@ export async function createIndex(name: string, drop: boolean) {
 }
 
 async function seedTracks() {
+  console.log('____________ SEED TRACKS ______________ ')
   const indexName = 'tracks'
   await createIndex(indexName, true)
 
