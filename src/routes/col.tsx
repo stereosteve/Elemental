@@ -24,6 +24,8 @@ import { useSearchParams } from 'react-router'
 import { TrackRow } from '@/types/track-row'
 import { DJContext, useDJ } from '@/state/dj'
 import clsx from 'clsx'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { CidImage } from '@/components/cid-image'
 
 const fetchSize = 200
 
@@ -68,6 +70,12 @@ export default function CoolTable() {
 
   const columns = React.useMemo<ColumnDef<TrackRow>[]>(
     () => [
+      {
+        accessorKey: 'img',
+        size: 60,
+        enableSorting: false,
+        cell: ({ row }) => <CidImage img={row.original.img} size={50} />,
+      },
       {
         header: 'Title',
         accessorKey: 'title',
@@ -120,6 +128,43 @@ export default function CoolTable() {
     refetchOnWindowFocus: false,
     placeholderData: keepPreviousData,
   })
+
+  function FilterBox({
+    fieldName,
+    buckets,
+  }: {
+    fieldName: keyof FacetResponse
+    buckets: AggBucket[]
+  }) {
+    console.log('render filter box', fieldName)
+    return (
+      <ScrollArea className="bg-background p-2 flex-1 h-64">
+        {buckets.map((b) => (
+          <div
+            key={b.key}
+            onClick={() => queryToggle(fieldName, b.key)}
+            className={clsx(
+              'flex p-1',
+              searchParams.has(fieldName, b.key) && 'bg-amber-300'
+            )}
+          >
+            <div className="flex-grow">{b.key}</div>
+            <div>{b.doc_count}</div>
+          </div>
+        ))}
+      </ScrollArea>
+    )
+  }
+
+  const artistFilter = React.useMemo(() => {
+    if (!facets) return null
+    return <FilterBox fieldName="artist" buckets={facets['artist']} />
+  }, [facets?.artist])
+
+  const genreFilter = React.useMemo(() => {
+    if (!facets) return null
+    return <FilterBox fieldName="genre" buckets={facets['genre']} />
+  }, [facets])
 
   //react-query has a useInfiniteQuery hook that is perfect for this use case
   const { data, fetchNextPage, isFetching, isLoading } =
@@ -216,7 +261,7 @@ export default function CoolTable() {
 
   const rowVirtualizer = useVirtualizer({
     count: rows.length,
-    estimateSize: () => 33, //estimate row height for accurate scrollbar dragging
+    estimateSize: () => 60, //estimate row height for accurate scrollbar dragging
     getScrollElement: () => tableContainerRef.current,
     //measure dynamic row height, except in firefox because it measures table border height incorrectly
     measureElement:
@@ -229,26 +274,6 @@ export default function CoolTable() {
 
   if (isLoading) {
     return <>Loading...</>
-  }
-
-  function FilterBox({ fieldName }: { fieldName: keyof FacetResponse }) {
-    return (
-      <div className="bg-background p-2 flex-1">
-        {facets![fieldName].map((b) => (
-          <div
-            key={b.key}
-            onClick={() => queryToggle(fieldName, b.key)}
-            className={clsx(
-              'flex p-1',
-              searchParams.has(fieldName, b.key) && 'bg-amber-300'
-            )}
-          >
-            <div className="flex-grow">{b.key}</div>
-            <div>{b.doc_count}</div>
-          </div>
-        ))}
-      </div>
-    )
   }
 
   return (
@@ -267,8 +292,10 @@ export default function CoolTable() {
 
       {/* FILTER BOXES */}
       <div className="flex gap-4 my-4">
-        <FilterBox fieldName="genre" />
-        <FilterBox fieldName="artist" />
+        {/* <FilterBox fieldName="genre" />
+        <FilterBox fieldName="artist" /> */}
+        {genreFilter}
+        {artistFilter}
       </div>
 
       {/* HIT COUNT */}
@@ -277,7 +304,7 @@ export default function CoolTable() {
       </div>
 
       <div
-        className="table-container"
+        className="table-container bg-background"
         onScroll={(e) => fetchMoreOnBottomReached(e.currentTarget)}
         ref={tableContainerRef}
         style={{
@@ -289,6 +316,7 @@ export default function CoolTable() {
         {/* Even though we're still using sematic table tags, we must use CSS grid and flexbox for dynamic row heights */}
         <table style={{ display: 'grid' }}>
           <thead
+            className="bg-background"
             style={{
               display: 'grid',
               position: 'sticky',
@@ -354,6 +382,10 @@ export default function CoolTable() {
                     transform: `translateY(${virtualRow.start}px)`, //this should always be a `style` as it changes on scroll
                     width: '100%',
                   }}
+                  className={clsx(
+                    dj.isPlaying({ track: row.original, djContext: djc }) &&
+                      'bg-amber-100'
+                  )}
                 >
                   {row.getVisibleCells().map((cell) => {
                     return (

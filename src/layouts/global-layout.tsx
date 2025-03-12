@@ -65,7 +65,7 @@ export function GlobalLayout() {
         <ThemeToggle />
         <CurrentUser />
       </div>
-      <div className="ml-16 bg-secondary min-h-screen">
+      <div className="ml-16">
         <Outlet />
       </div>
       <Toaster position="top-center" richColors />

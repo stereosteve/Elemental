@@ -1,22 +1,18 @@
-html {
-  font-family: sans-serif;
-  font-size: 14px;
-}
+
 
 table {
   border-collapse: collapse;
   border-spacing: 0;
   font-family: arial, sans-serif;
   table-layout: fixed;
+
+  background: white;
 }
 
 thead {
-  background: black;
+  /* background: black; */
 }
 
-tr {
-  /* border-bottom: 1px solid lightgray; */
-}
 
 th {
   border-bottom: 1px solid lightgray;
@@ -30,6 +26,8 @@ td {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+
+  align-items: center;
 }
 
 .table-container {

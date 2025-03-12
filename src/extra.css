@@ -1,6 +1,6 @@
 
 .nav-rail {
-  @apply  fixed top-0 left-0 h-full w-16 border-r;
+  @apply  fixed top-0 left-0 h-full w-16;
 
   a.active {
     @apply bg-accent border-r-2 border-amber-400;

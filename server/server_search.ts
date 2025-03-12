@@ -63,7 +63,7 @@ async function facetField(c: Context, fieldName: string) {
         [fieldName]: {
           terms: {
             field: FIELD_MAPPING[fieldName],
-            size: 10,
+            size: 1000,
           },
         },
       },

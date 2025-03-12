@@ -17,7 +17,7 @@ export type DJParams = {
   djContext?: DJContext
 }
 
-interface DJState {
+export interface DJState {
   track?: TrackRow
   playlist?: PlaylistRow
   djContext?: DJContext
