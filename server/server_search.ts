@@ -9,6 +9,7 @@ const FIELD_MAPPING: Record<string, string> = {
   artist: 'user.name.keyword',
   genre: 'genre.keyword',
   musicalKey: 'musicalKey',
+  bpm: 'bpm',
 }
 
 app.get('/api/search', async (c) => {
@@ -47,7 +48,8 @@ app.get('/api/search', async (c) => {
 })
 
 app.get('/api/search/facet', async (c) => {
-  const fields = Object.keys(FIELD_MAPPING)
+  const fields = ['genre', 'artist', 'bpm', 'musicalKey']
+  // const fields = ['bpm']
   const facets = await Promise.all(fields.map((f) => facetField(c, f)))
   const keyedFacets = Object.fromEntries(fields.map((f, i) => [f, facets[i]]))
   return c.json(keyedFacets)
@@ -57,8 +59,9 @@ async function facetField(c: Context, fieldName: string) {
   const found = await client.search({
     index: 'tracks',
     body: {
-      query: buildQueryContainer(c, fieldName),
+      query: buildQueryContainer(c),
       size: 0,
+
       aggs: {
         [fieldName]: {
           terms: {

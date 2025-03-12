@@ -1,5 +1,5 @@
 import React from 'react'
-import './colll.css'
+import './super-table.css'
 
 import {
   ColumnDef,
@@ -26,6 +26,7 @@ import { DJContext, useDJ } from '@/state/dj'
 import clsx from 'clsx'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { CidImage } from '@/components/cid-image'
+import { Loader2Icon } from 'lucide-react'
 
 const fetchSize = 200
 
@@ -42,9 +43,10 @@ export type TrackSearchResponse = {
 type FacetResponse = {
   artist: AggBucket[]
   genre: AggBucket[]
+  bpm: AggBucket[]
 }
 
-export default function CoolTable() {
+export default function SuperTable() {
   const dj = useDJ()
   const [searchParams, setSearchParams] = useSearchParams()
 
@@ -57,7 +59,7 @@ export default function CoolTable() {
     if (searchParams.has(key, val)) {
       searchParams.delete(key, val)
     } else {
-      searchParams.append(key, val)
+      searchParams.set(key, val)
     }
     setSearchParams(searchParams)
   }
@@ -138,21 +140,24 @@ export default function CoolTable() {
   }) {
     console.log('render filter box', fieldName)
     return (
-      <ScrollArea className="bg-background p-2 flex-1 h-64">
-        {buckets.map((b) => (
-          <div
-            key={b.key}
-            onClick={() => queryToggle(fieldName, b.key)}
-            className={clsx(
-              'flex p-1',
-              searchParams.has(fieldName, b.key) && 'bg-amber-300'
-            )}
-          >
-            <div className="flex-grow">{b.key}</div>
-            <div>{b.doc_count}</div>
-          </div>
-        ))}
-      </ScrollArea>
+      <div className="bg-background flex-1">
+        <div className="p-2 text-bold">{fieldName}</div>
+        <ScrollArea className="p-2 h-48">
+          {buckets.map((b) => (
+            <div
+              key={b.key}
+              onClick={() => queryToggle(fieldName, b.key)}
+              className={clsx(
+                'flex p-1 cursor-pointer hover:bg-secondary',
+                searchParams.has(fieldName, b.key) && 'bg-amber-300'
+              )}
+            >
+              <div className="flex-grow">{b.key}</div>
+              <div>{b.doc_count}</div>
+            </div>
+          ))}
+        </ScrollArea>
+      </div>
     )
   }
 
@@ -164,6 +169,16 @@ export default function CoolTable() {
   const genreFilter = React.useMemo(() => {
     if (!facets) return null
     return <FilterBox fieldName="genre" buckets={facets['genre']} />
+  }, [facets])
+
+  const bpmFilter = React.useMemo(() => {
+    if (!facets) return null
+    return <FilterBox fieldName="bpm" buckets={facets['bpm']} />
+  }, [facets])
+
+  const musicalKeyFilter = React.useMemo(() => {
+    if (!facets) return null
+    return <FilterBox fieldName="musicalKey" buckets={facets['musicalKey']} />
   }, [facets])
 
   //react-query has a useInfiniteQuery hook that is perfect for this use case
@@ -273,7 +288,9 @@ export default function CoolTable() {
   })
 
   if (isLoading) {
-    return <>Loading...</>
+    return (
+      <Loader2Icon className="animate-spin fixed top-4 right-12" size={48} />
+    )
   }
 
   return (
@@ -292,15 +309,10 @@ export default function CoolTable() {
 
       {/* FILTER BOXES */}
       <div className="flex gap-4 my-4">
-        {/* <FilterBox fieldName="genre" />
-        <FilterBox fieldName="artist" /> */}
         {genreFilter}
         {artistFilter}
-      </div>
-
-      {/* HIT COUNT */}
-      <div>
-        ({flatData.length} of {totalDBRowCount} rows fetched)
+        {bpmFilter}
+        {musicalKeyFilter}
       </div>
 
       <div
@@ -409,7 +421,12 @@ export default function CoolTable() {
           </tbody>
         </table>
       </div>
-      {isFetching && <div>Fetching More...</div>}
+
+      {/* HIT COUNT */}
+      <div className="p-2 flex gap-2">
+        <div>{totalDBRowCount} rows</div>
+        {isFetching && <div>Fetching More...</div>}
+      </div>
     </div>
   )
 }

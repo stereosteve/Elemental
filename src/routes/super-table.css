@@ -6,7 +6,6 @@ table {
   font-family: arial, sans-serif;
   table-layout: fixed;
 
-  background: white;
 }
 
 thead {
@@ -17,12 +16,15 @@ thead {
 th {
   border-bottom: 1px solid lightgray;
   border-right: 1px solid lightgray;
-  padding: 2px 4px;
+  padding: 8px;
   text-align: left;
 }
 
 td {
-  padding: 6px;
+  padding: 8px;
+  /* border-right: 1px solid lightgray; */
+  border-bottom: 1px solid lightgray;
+
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -32,6 +34,6 @@ td {
 
 .table-container {
   border: 1px solid lightgray;
-  margin: 1rem;
+  margin-top: 1rem;
 }
 

@@ -23,7 +23,7 @@ export function GlobalLayout() {
   let navItems = [
     { to: '/', icon: <MountainIcon /> },
     { to: '/explore/genres', icon: <AudioWaveformIcon /> },
-    { to: '/col', icon: <FileSpreadsheetIcon /> },
+    { to: '/all', icon: <FileSpreadsheetIcon /> },
   ]
 
   if (myHandle) {
