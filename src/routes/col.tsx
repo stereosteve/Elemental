@@ -11,11 +11,16 @@ import {
   SortingState,
   useReactTable,
 } from '@tanstack/react-table'
-import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query'
+import {
+  keepPreviousData,
+  useInfiniteQuery,
+  useQuery,
+} from '@tanstack/react-query'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { simpleFetch } from '@/client'
 import { UserHoverCard } from '@/components/user-hover-card'
 import { Input } from '@/components/ui/input'
+import { useSearchParams } from 'react-router'
 
 const fetchSize = 200
 
@@ -27,12 +32,31 @@ type TrakeLite = {
   genre: string
 }
 
+type AggBucket = {
+  key: string
+  doc_count: number
+}
+
 export type TrackSearchResponse = {
   tracks: TrakeLite[]
   totalRowCount: number
 }
 
+type FacetResponse = {
+  artist: AggBucket
+  genre: AggBucket
+}
+
 export default function CoolTable() {
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  function querySet(key: string, val: string) {
+    searchParams.set(key, val)
+    setSearchParams(searchParams)
+
+    // setQ(q + ` ${key}.keyword:${val}`)
+  }
+
   const [q, setQ] = React.useState('')
 
   const tableContainerRef = React.useRef<HTMLDivElement>(null)
@@ -41,19 +65,19 @@ export default function CoolTable() {
 
   const columns = React.useMemo<ColumnDef<TrakeLite>[]>(
     () => [
-      {
-        accessorKey: 'id',
-        header: 'ID',
-        size: 200,
-      },
+      // {
+      //   accessorKey: 'id',
+      //   header: 'ID',
+      //   size: 200,
+      // },
       {
         accessorKey: 'title',
-        size: 500,
+        size: 300,
         // cell: (info) => info.getValue(),
       },
       {
         accessorKey: 'artistName',
-        size: 400,
+        size: 300,
         cell: ({ row }) => (
           <UserHoverCard
             user={{
@@ -76,22 +100,34 @@ export default function CoolTable() {
     []
   )
 
+  // todo... add (debounced) q to search params?
+  const searchParamString = searchParams.toString()
+
+  const { data: facets } = useQuery<FacetResponse>({
+    queryKey: [`/api/search/facet?${searchParamString}`],
+    refetchOnWindowFocus: false,
+    placeholderData: keepPreviousData,
+  })
+
   //react-query has a useInfiniteQuery hook that is perfect for this use case
   const { data, fetchNextPage, isFetching, isLoading } =
     useInfiniteQuery<TrackSearchResponse>({
       queryKey: [
         'people',
         q,
+        searchParamString,
         sorting, //refetch when sorting changes
       ],
       queryFn: async ({ pageParam = 0 }) => {
+        console.log({ sorting })
         const start = (pageParam as number) * fetchSize
-        const fetchedData = await simpleFetch(`/api/search`, {
-          q,
-          from: start.toString(),
-        })
+        searchParams.set('q', q)
+        searchParams.set('from', start.toString())
+        const fetchedData = await simpleFetch(
+          `/api/search?` + searchParamString
+        )
         const tracks = fetchedData.body.hits.hits.map((h) => h._source)
-        console.log(start, tracks)
+        // console.log(topGenres)
         return {
           tracks,
           totalRowCount: fetchedData.body.hits.total.value,
@@ -184,11 +220,39 @@ export default function CoolTable() {
       <div>
         <Input
           value={q}
-          onChange={(e) => setQ(e.target.value)}
+          onChange={(e) => {
+            setQ(e.target.value)
+            // might want to debounce this...
+            querySet('q', e.target.value)
+          }}
           className="p-6 bg-background"
         />
       </div>
-      ({flatData.length} of {totalDBRowCount} rows fetched)
+
+      {/* FILTER BOXES */}
+      <div className="flex gap-4">
+        <div className="border p-2">
+          {facets?.genre.map((b) => (
+            <div key={b.key} onClick={() => querySet('genre', b.key)}>
+              {b.key} ... {b.doc_count}
+            </div>
+          ))}
+        </div>
+
+        <div className="bg-background p-2">
+          {facets?.artist.map((b) => (
+            <div key={b.key} onClick={() => querySet('artist', b.key)}>
+              {b.key} ... {b.doc_count}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* HIT COUNT */}
+      <div>
+        ({flatData.length} of {totalDBRowCount} rows fetched)
+      </div>
+
       <div
         className="table-container"
         onScroll={(e) => fetchMoreOnBottomReached(e.currentTarget)}
