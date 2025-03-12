@@ -21,7 +21,7 @@ export function UserHoverCard(props: Props) {
 
   const propUser = props.user
   const children = props.children || (
-    <Link to={urlFor.user(propUser)}>{propUser.name}</Link>
+    <Link to={urlFor.user(propUser)}>{propUser.name || propUser.handle}</Link>
   )
 
   const { data } = useQuery<{ user: UserRow }>({

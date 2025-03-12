@@ -21,16 +21,10 @@ import { simpleFetch } from '@/client'
 import { UserHoverCard } from '@/components/user-hover-card'
 import { Input } from '@/components/ui/input'
 import { useSearchParams } from 'react-router'
+import { TrackRow } from '@/types/track-row'
+import { DJContext, useDJ } from '@/state/dj'
 
 const fetchSize = 200
-
-type TrakeLite = {
-  title: string
-  artistHandle: string
-  artistName: string
-  bpm: number
-  genre: string
-}
 
 type AggBucket = {
   key: string
@@ -38,16 +32,17 @@ type AggBucket = {
 }
 
 export type TrackSearchResponse = {
-  tracks: TrakeLite[]
+  tracks: TrackRow[]
   totalRowCount: number
 }
 
 type FacetResponse = {
-  artist: AggBucket
-  genre: AggBucket
+  artist: AggBucket[]
+  genre: AggBucket[]
 }
 
 export default function CoolTable() {
+  const dj = useDJ()
   const [searchParams, setSearchParams] = useSearchParams()
 
   function querySet(key: string, val: string) {
@@ -63,38 +58,41 @@ export default function CoolTable() {
 
   const [sorting, setSorting] = React.useState<SortingState>([])
 
-  const columns = React.useMemo<ColumnDef<TrakeLite>[]>(
+  const columns = React.useMemo<ColumnDef<TrackRow>[]>(
     () => [
-      // {
-      //   accessorKey: 'id',
-      //   header: 'ID',
-      //   size: 200,
-      // },
       {
+        header: 'Title',
         accessorKey: 'title',
         size: 300,
         // cell: (info) => info.getValue(),
       },
       {
-        accessorKey: 'artistName',
-        size: 300,
+        header: 'Artist',
+        size: 200,
         cell: ({ row }) => (
           <UserHoverCard
             user={{
-              handle: row.original.artistHandle,
-              name: row.original.artistName,
+              handle: row.original.user.handle,
+              name: row.original.user.name,
             }}
           />
         ),
       },
       {
+        header: 'Reposts',
+        accessorKey: 'repostCount',
+      },
+      {
+        header: 'Genre',
         accessorKey: 'genre',
       },
       {
+        header: 'BPM',
         accessorKey: 'bpm',
       },
       {
-        accessorKey: 'musical_key',
+        header: 'Key',
+        accessorKey: 'musicalKey',
       },
     ],
     []
@@ -121,12 +119,10 @@ export default function CoolTable() {
       queryFn: async ({ pageParam = 0 }) => {
         console.log({ sorting })
         const start = (pageParam as number) * fetchSize
-        searchParams.set('q', q)
-        searchParams.set('from', start.toString())
         const fetchedData = await simpleFetch(
-          `/api/search?` + searchParamString
+          `/api/search?from=${start.toString()}&` + searchParamString
         )
-        const tracks = fetchedData.body.hits.hits.map((h) => h._source)
+        const tracks = fetchedData.body.hits.hits.map((h: any) => h._source)
         // console.log(topGenres)
         return {
           tracks,
@@ -146,6 +142,11 @@ export default function CoolTable() {
   )
   const totalDBRowCount = data?.pages?.[0]?.totalRowCount ?? 0
   const totalFetched = flatData.length
+
+  const djc: DJContext = {
+    path: location.pathname,
+    items: flatData,
+  }
 
   //called on scroll and possibly on mount to fetch more data as the user scrolls and reaches bottom of table
   const fetchMoreOnBottomReached = React.useCallback(
@@ -318,9 +319,10 @@ export default function CoolTable() {
             }}
           >
             {rowVirtualizer.getVirtualItems().map((virtualRow) => {
-              const row = rows[virtualRow.index] as Row<TrakeLite>
+              const row = rows[virtualRow.index] as Row<TrackRow>
               return (
                 <tr
+                  onClick={() => dj.play(row.original, djc)}
                   data-index={virtualRow.index} //needed for dynamic row height measurement
                   ref={(node) => rowVirtualizer.measureElement(node)} //measure dynamic row height
                   key={row.id}

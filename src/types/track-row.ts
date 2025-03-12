@@ -7,6 +7,12 @@ export type TrackRow = {
   img: string
   createdAt: string
 
+  // added for search branch
+  genre?: string
+  tags?: string
+  bpm?: number
+  musicalKey?: string
+
   repostCount: number
   saveCount: number
   commentCount: number
@@ -20,6 +26,7 @@ export type TrackRow = {
   user: {
     handle: string
     name: string
+    location?: string
   }
 
   knownReposters?: UserRow[]

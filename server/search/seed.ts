@@ -34,15 +34,14 @@ export async function createIndex(name: string, drop: boolean) {
             type: 'float',
           },
           title: textWithKeyword,
-          // img: textWithKeyword,
           genre: textWithKeyword,
           tags: textWithKeyword,
-          release_date: {
+          releaseDate: {
             type: 'date',
             format:
               'yyyy-MM-dd HH:mm:ss.SSSSSS||yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis',
           },
-          musical_key: {
+          musicalKey: {
             type: 'keyword',
           },
           // stream_conditions: textWithKeyword,
@@ -53,11 +52,11 @@ export async function createIndex(name: string, drop: boolean) {
           saveCount: {
             type: 'integer',
           },
-          artistId: {
-            type: 'integer',
+
+          user: {
+            dynamic: 'true',
+            type: 'object',
           },
-          artistHandle: textWithKeyword,
-          artistName: textWithKeyword,
         },
       },
     },
@@ -70,16 +69,17 @@ async function seedTracks() {
 
   const rows = await sql`
   select
+      'track' as "type",
       track_id as "id",
       title,
       coalesce(cover_art_sizes, cover_art) as img,
       genre,
       tags,
-      release_date,
+      release_date as "releaseDate",
       bpm,
-      musical_key,
-      stream_conditions,
-      download_conditions,
+      musical_key as "musicalKey",
+      stream_conditions as "streamConditions",
+      -- download_conditions,
 
 
       -- stats
@@ -87,9 +87,16 @@ async function seedTracks() {
       aggt.save_count as "saveCount",
 
       -- artist
-      owner_id as "artistId",
-      handle as "artistHandle",
-      name as "artistName"
+      json_build_object(
+        'handle', users.handle,
+        'name', users.name,
+        'location', users.location,
+        'followerCount', aggu.follower_count
+      ) as user
+      -- owner_id as "artistId",
+      -- handle as "artistHandle",
+      -- name as "artistName"
+
     from
       tracks
       join aggregate_track aggt using(track_id)
@@ -100,7 +107,6 @@ async function seedTracks() {
       and is_delete = false
       and tracks.is_available = true
       and stem_of is null
-    order by users.user_id, track_id
     -- limit 1000
   `
 
@@ -119,7 +125,7 @@ async function seedTracks() {
     index: indexName,
     datasource: rows,
     onDocument(doc) {
-      doc.release_date = doc.release_date.substring(0, 19)
+      doc.releaseDate = doc.releaseDate.substring(0, 19)
       // console.log(doc)
       return { index: { _index: indexName, _id: `track:${doc!.id}` } }
     },

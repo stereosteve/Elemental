@@ -6,6 +6,7 @@ import { useMe } from '@/state/me'
 import { useIsFetching } from '@tanstack/react-query'
 import {
   AudioWaveformIcon,
+  FileSpreadsheetIcon,
   HeartIcon,
   HistoryIcon,
   Loader2Icon,
@@ -22,6 +23,7 @@ export function GlobalLayout() {
   let navItems = [
     { to: '/', icon: <MountainIcon /> },
     { to: '/explore/genres', icon: <AudioWaveformIcon /> },
+    { to: '/col', icon: <FileSpreadsheetIcon /> },
   ]
 
   if (myHandle) {

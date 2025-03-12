@@ -16,7 +16,7 @@ app.get('/api/search', async (c) => {
       query: buildQueryContainer(c),
       size: 200,
       from: from,
-      sort: ['artistName.keyword', 'title.keyword'],
+      sort: ['user.name.keyword', 'title.keyword'],
     },
   })
   return c.json(found)
@@ -24,8 +24,8 @@ app.get('/api/search', async (c) => {
 
 const FIELD_MAPPING: Record<string, string> = {
   genre: 'genre.keyword',
-  artist: 'artistName.keyword',
-  musical_key: 'musical_key',
+  artist: 'user.name.keyword',
+  musical_key: 'musicalKey',
 }
 
 app.get('/api/search/facet', async (c) => {
@@ -52,7 +52,6 @@ async function facetField(c: Context, fieldName: string) {
     },
   })
 
-  // return found
   // @ts-ignore
   return found.body.aggregations[fieldName].buckets
 }
@@ -78,7 +77,7 @@ function buildQueryContainer(c: Context, omitFilter?: string) {
     const terms = c.req.queries(queryKey)
     if (terms?.length) {
       // @ts-ignore
-      dsl!.bool!.filter.push({
+      dsl.bool.filter.push({
         terms: {
           [osKey]: terms,
         },
