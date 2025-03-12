@@ -1,10 +1,10 @@
-import type { UserRow } from '@/types/user-row'
 import { CidImage } from '@/components/cid-image'
-import { Link, useNavigate } from 'react-router'
-import { useQuery } from '@tanstack/react-query'
 import { PageTitle } from '@/components/page-title'
-import { urlFor } from '@/lib/urlFor'
 import { UserHoverCard } from '@/components/user-hover-card'
+import { urlFor } from '@/lib/urlFor'
+import type { UserRow } from '@/types/user-row'
+import { useQuery } from '@tanstack/react-query'
+import { useNavigate } from 'react-router'
 
 type Resp = {
   genre: string

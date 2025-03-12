@@ -19,6 +19,7 @@ import { UserComments } from './routes/user-comments'
 import { UserHome } from './routes/user-home'
 import { UserPlaylists } from './routes/user-playlists'
 import UserReposts from './routes/user-reposts'
+import CoolTable from './routes/col'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -29,6 +30,7 @@ createRoot(document.getElementById('root')!).render(
             <Route element={<GlobalLayout />}>
               <Route path="/" element={<Home />} />
               <Route path="/about" element={<h1>About</h1>} />
+              <Route path="/col" element={<CoolTable />} />
               <Route path="/derp" element={<Derp />} />
               <Route path="/feed" element={<Feed />} />
               <Route path="/hot" element={<Hot />} />
