@@ -15,7 +15,7 @@ thead {
 
 th {
   border-bottom: 1px solid lightgray;
-  border-right: 1px solid lightgray;
+  /* border-right: 1px solid lightgray; */
   padding: 8px;
   text-align: left;
 }

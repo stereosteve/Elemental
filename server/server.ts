@@ -164,7 +164,9 @@ async function resolveHandle(handle: string) {
   return user_id
 }
 
+const port = 4201
+console.log(`serving on ${port}`)
 serve({
   fetch: app.fetch,
-  port: 4201,
+  port,
 })

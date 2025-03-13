@@ -44,8 +44,23 @@ export async function createIndex(name: string, drop: boolean) {
           musicalKey: {
             type: 'keyword',
           },
-          // stream_conditions: textWithKeyword,
-          // download_conditions: textWithKeyword,
+
+          streamConditions: {
+            type: 'object',
+            dynamic: 'true',
+          },
+          remixOf: {
+            type: 'object',
+            dynamic: 'true',
+          },
+          stemOf: {
+            type: 'object',
+            dynamic: 'true',
+          },
+
+          duration: {
+            type: 'integer',
+          },
           repostCount: {
             type: 'integer',
           },
@@ -76,11 +91,15 @@ async function seedTracks() {
       coalesce(cover_art_sizes, cover_art) as img,
       genre,
       tags,
-      release_date as "releaseDate",
+      coalesce(release_date, tracks.created_at) as "releaseDate",
+      duration,
       bpm,
       musical_key as "musicalKey",
-      stream_conditions as "streamConditions",
+
       -- download_conditions,
+      stream_conditions as "streamConditions",
+      remix_of as "remixOf",
+      stem_of as "stemOf",
 
 
       -- stats
@@ -94,9 +113,6 @@ async function seedTracks() {
         'location', users.location,
         'followerCount', aggu.follower_count
       ) as user
-      -- owner_id as "artistId",
-      -- handle as "artistHandle",
-      -- name as "artistName"
 
     from
       tracks

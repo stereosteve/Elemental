@@ -7,6 +7,7 @@
     "dev": "vite",
     "dev:server": "tsx watch server/server",
     "dev:support": "docker compose -f compose.dev.yml up -d",
+    "reindex": "tsx server/search/seed.ts",
     "prod": "tsx server/server",
     "build": "tsc -b && vite build",
     "lint": "eslint .",

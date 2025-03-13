@@ -27,6 +27,7 @@ import clsx from 'clsx'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { CidImage } from '@/components/cid-image'
 import { Loader2Icon } from 'lucide-react'
+import { formatDuration } from '@/lib/formatDuration'
 
 const fetchSize = 200
 
@@ -44,6 +45,7 @@ type FacetResponse = {
   artist: AggBucket[]
   genre: AggBucket[]
   bpm: AggBucket[]
+  musicalKey: AggBucket[]
 }
 
 export default function SuperTable() {
@@ -64,7 +66,7 @@ export default function SuperTable() {
     setSearchParams(searchParams)
   }
 
-  const [q, setQ] = React.useState('')
+  const [q, setQ] = React.useState(searchParams.get('q') || '')
 
   const tableContainerRef = React.useRef<HTMLDivElement>(null)
 
@@ -73,6 +75,7 @@ export default function SuperTable() {
   const columns = React.useMemo<ColumnDef<TrackRow>[]>(
     () => [
       {
+        header: '',
         accessorKey: 'img',
         size: 60,
         enableSorting: false,
@@ -98,20 +101,49 @@ export default function SuperTable() {
         ),
       },
       {
-        header: 'Reposts',
-        accessorKey: 'repostCount',
-      },
-      {
         header: 'Genre',
         accessorKey: 'genre',
       },
       {
+        header: 'Released',
+        accessorKey: 'releaseDate',
+        accessorFn: (track) => new Date(track.releaseDate).toLocaleDateString(),
+        meta: {
+          // className: 'justify-end',
+        },
+      },
+      {
+        header: 'Length',
+        accessorKey: 'duration',
+        accessorFn: (track) => formatDuration(track.duration),
+        meta: {
+          // className: 'justify-end',
+        },
+      },
+      {
         header: 'BPM',
         accessorKey: 'bpm',
+        meta: {
+          // className: 'justify-end',
+        },
       },
       {
         header: 'Key',
         accessorKey: 'musicalKey',
+      },
+      {
+        header: 'Followers',
+        accessorKey: 'user.followerCount',
+        meta: {
+          // className: 'justify-end',
+        },
+      },
+      {
+        header: 'Reposts',
+        accessorKey: 'repostCount',
+        meta: {
+          // className: 'justify-end',
+        },
       },
     ],
     []
@@ -300,9 +332,9 @@ export default function SuperTable() {
           value={q}
           onChange={(e) => {
             setQ(e.target.value)
-            // might want to debounce this...
             querySet('q', e.target.value)
           }}
+          placeholder="Search..."
           className="p-6 bg-background"
         />
       </div>
@@ -403,6 +435,9 @@ export default function SuperTable() {
                     return (
                       <td
                         key={cell.id}
+                        className={
+                          (cell.column.columnDef.meta as any)?.className
+                        }
                         style={{
                           display: 'flex',
                           width: cell.column.getSize(),

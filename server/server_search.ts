@@ -7,6 +7,8 @@ const app = new Hono()
 const FIELD_MAPPING: Record<string, string> = {
   title: 'title.keyword',
   artist: 'user.name.keyword',
+  // tanstack table does this...
+  user_followerCount: 'user.followerCount',
   genre: 'genre.keyword',
   musicalKey: 'musicalKey',
   bpm: 'bpm',

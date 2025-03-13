@@ -6,12 +6,13 @@ export type TrackRow = {
   title: string
   img: string
   createdAt: string
+  releaseDate: string
 
-  // added for search branch
-  genre?: string
-  tags?: string
-  bpm?: number
-  musicalKey?: string
+  duration: number
+  genre: string
+  tags: string
+  bpm: number
+  musicalKey: string
 
   repostCount: number
   saveCount: number
@@ -29,6 +30,7 @@ export type TrackRow = {
     location?: string
   }
 
+  // personalization...
   knownReposters?: UserRow[]
   isReposted: boolean
   isSaved: boolean

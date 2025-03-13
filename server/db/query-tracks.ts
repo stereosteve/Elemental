@@ -18,6 +18,13 @@ export async function queryTracks({ myId, ids, userId }: TracksQuery) {
     title,
     coalesce(cover_art_sizes, cover_art) as img,
     tracks.created_at as "createdAt",
+    coalesce(release_date, tracks.created_at) as "releaseDate",
+    duration,
+    genre,
+    tags,
+    bpm,
+    musical_key as "musicalKey",
+
 
     stream_conditions as "streamConditions",
 
