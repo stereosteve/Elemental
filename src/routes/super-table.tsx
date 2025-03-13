@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import './super-table.css'
 
 import {
@@ -49,13 +49,55 @@ type FacetResponse = {
 }
 
 export default function SuperTable() {
-  const dj = useDJ()
   const [searchParams, setSearchParams] = useSearchParams()
+  const searchParamString = searchParams.toString()
+  const [q, setQ] = React.useState(searchParams.get('q') || '')
 
   function querySet(key: string, val: string) {
     searchParams.set(key, val)
     setSearchParams(searchParams)
   }
+
+  const { data: facets } = useQuery<FacetResponse>({
+    queryKey: [`/api/search/facet?${searchParamString}`],
+    refetchOnWindowFocus: false,
+    placeholderData: keepPreviousData,
+  })
+
+  return (
+    <div className="p-2">
+      <Input
+        value={q}
+        onChange={(e) => {
+          setQ(e.target.value)
+          querySet('q', e.target.value)
+        }}
+        placeholder="Search..."
+        className="p-6 bg-background"
+      />
+
+      {facets && (
+        <div className="flex gap-4 p-2 pb-0">
+          <FilterBox fieldName="genre" buckets={facets['genre']} />
+          <FilterBox fieldName="artist" buckets={facets['artist']} />
+          <FilterBox fieldName="bpm" buckets={facets['bpm']} />
+          <FilterBox fieldName="musicalKey" buckets={facets['musicalKey']} />
+        </div>
+      )}
+
+      <VirtualTable />
+    </div>
+  )
+}
+
+function FilterBox({
+  fieldName,
+  buckets,
+}: {
+  fieldName: keyof FacetResponse
+  buckets: AggBucket[]
+}) {
+  const [searchParams, setSearchParams] = useSearchParams()
 
   function queryToggle(key: string, val: string) {
     if (searchParams.has(key, val)) {
@@ -66,11 +108,35 @@ export default function SuperTable() {
     setSearchParams(searchParams)
   }
 
-  const [q, setQ] = React.useState(searchParams.get('q') || '')
+  return (
+    <div className="bg-background flex-1">
+      <div className="p-2 py-1 font-bold">{fieldName}</div>
+      <ScrollArea className="p-2 h-48">
+        {buckets.map((b) => (
+          <div
+            key={b.key}
+            onClick={() => queryToggle(fieldName, b.key)}
+            className={clsx(
+              'flex p-1 cursor-pointer hover:bg-secondary',
+              searchParams.has(fieldName, b.key) && 'bg-amber-300'
+            )}
+          >
+            <div className="flex-grow">{b.key}</div>
+            <div>{b.doc_count}</div>
+          </div>
+        ))}
+      </ScrollArea>
+    </div>
+  )
+}
 
+function VirtualTable() {
+  const dj = useDJ()
+  const [searchParams] = useSearchParams()
+  const [sorting, setSorting] = React.useState<SortingState>([])
   const tableContainerRef = React.useRef<HTMLDivElement>(null)
 
-  const [sorting, setSorting] = React.useState<SortingState>([])
+  const searchParamString = searchParams.toString()
 
   const columns = React.useMemo<ColumnDef<TrackRow>[]>(
     () => [
@@ -149,76 +215,10 @@ export default function SuperTable() {
     []
   )
 
-  // todo... add (debounced) q to search params?
-  const searchParamString = searchParams.toString()
-
-  React.useEffect(() => {
-    console.log(sorting)
-    // querySet('sort', JSON.stringify(Object.values(sorting)))
-  }, [sorting])
-
-  const { data: facets } = useQuery<FacetResponse>({
-    queryKey: [`/api/search/facet?${searchParamString}`],
-    refetchOnWindowFocus: false,
-    placeholderData: keepPreviousData,
-  })
-
-  function FilterBox({
-    fieldName,
-    buckets,
-  }: {
-    fieldName: keyof FacetResponse
-    buckets: AggBucket[]
-  }) {
-    console.log('render filter box', fieldName)
-    return (
-      <div className="bg-background flex-1">
-        <div className="p-2 text-bold">{fieldName}</div>
-        <ScrollArea className="p-2 h-48">
-          {buckets.map((b) => (
-            <div
-              key={b.key}
-              onClick={() => queryToggle(fieldName, b.key)}
-              className={clsx(
-                'flex p-1 cursor-pointer hover:bg-secondary',
-                searchParams.has(fieldName, b.key) && 'bg-amber-300'
-              )}
-            >
-              <div className="flex-grow">{b.key}</div>
-              <div>{b.doc_count}</div>
-            </div>
-          ))}
-        </ScrollArea>
-      </div>
-    )
-  }
-
-  const artistFilter = React.useMemo(() => {
-    if (!facets) return null
-    return <FilterBox fieldName="artist" buckets={facets['artist']} />
-  }, [facets?.artist])
-
-  const genreFilter = React.useMemo(() => {
-    if (!facets) return null
-    return <FilterBox fieldName="genre" buckets={facets['genre']} />
-  }, [facets])
-
-  const bpmFilter = React.useMemo(() => {
-    if (!facets) return null
-    return <FilterBox fieldName="bpm" buckets={facets['bpm']} />
-  }, [facets])
-
-  const musicalKeyFilter = React.useMemo(() => {
-    if (!facets) return null
-    return <FilterBox fieldName="musicalKey" buckets={facets['musicalKey']} />
-  }, [facets])
-
-  //react-query has a useInfiniteQuery hook that is perfect for this use case
   const { data, fetchNextPage, isFetching, isLoading } =
     useInfiniteQuery<TrackSearchResponse>({
       queryKey: [
-        'people',
-        q,
+        'super-table',
         searchParamString,
         sorting, //refetch when sorting changes
       ],
@@ -230,7 +230,6 @@ export default function SuperTable() {
           `/api/search?from=${start}&sort=${sort}&` + searchParamString
         )
         const tracks = fetchedData.body.hits.hits.map((h: any) => h._source)
-        // console.log(topGenres)
         return {
           tracks,
           totalRowCount: fetchedData.body.hits.total.value,
@@ -290,13 +289,20 @@ export default function SuperTable() {
     // debugTable: true,
   })
 
-  //scroll to top of table when sorting changes
-  const handleSortingChange: OnChangeFn<SortingState> = (updater) => {
-    setSorting(updater)
+  function scrollToTop() {
     if (table.getRowModel().rows.length) {
       rowVirtualizer.scrollToIndex?.(0)
     }
   }
+
+  // scroll to top when sorting changes
+  const handleSortingChange: OnChangeFn<SortingState> = (updater) => {
+    setSorting(updater)
+    scrollToTop()
+  }
+
+  // scroll to top when data changes
+  useEffect(scrollToTop, [searchParamString])
 
   //since this table option is derived from table row model state, we're using the table.setOptions utility
   table.setOptions((prev) => ({
@@ -326,27 +332,7 @@ export default function SuperTable() {
   }
 
   return (
-    <div className="p-4">
-      <div>
-        <Input
-          value={q}
-          onChange={(e) => {
-            setQ(e.target.value)
-            querySet('q', e.target.value)
-          }}
-          placeholder="Search..."
-          className="p-6 bg-background"
-        />
-      </div>
-
-      {/* FILTER BOXES */}
-      <div className="flex gap-4 my-4">
-        {genreFilter}
-        {artistFilter}
-        {bpmFilter}
-        {musicalKeyFilter}
-      </div>
-
+    <div className="px-2">
       <div
         className="table-container bg-background"
         onScroll={(e) => fetchMoreOnBottomReached(e.currentTarget)}
