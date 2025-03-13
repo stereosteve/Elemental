@@ -27,3 +27,26 @@
   }
 }
 
+
+.super-table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  table-layout: fixed;
+}
+
+.super-table th {
+  padding: 8px;
+  text-align: left;
+}
+
+.super-table tr {
+  @apply border-b;
+}
+
+.super-table td {
+  padding: 8px;
+  align-items: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
