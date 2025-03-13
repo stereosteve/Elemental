@@ -15,8 +15,11 @@ export const queryClient = new QueryClient({
   },
 })
 
-export async function simpleFetch(u: string) {
+export async function simpleFetch(u: string, query?: Record<string, string>) {
   const { myHandle } = meStore.getState()
+  if (query) {
+    u = u + '?' + new URLSearchParams(query).toString()
+  }
   console.log(u, { myHandle })
   const resp = await fetch(u, {
     headers: {

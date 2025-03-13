@@ -39,8 +39,9 @@ export default function Feed() {
   }
 
   return (
-    <div className="container mx-auto py-8">
+    <div className="max-w-[900px] mx-auto py-8">
       <PageTitle title="Feed" />
+      <h1 className="text-2xl font-bold py-4">Feed</h1>
 
       {feed.map((stub) => (
         <div key={stub.created_at} className="">

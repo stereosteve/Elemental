@@ -13,7 +13,8 @@ export function Hot() {
   }
 
   return (
-    <div className="container mx-auto py-8">
+    <div className=" max-w-[900px] mx-auto p-4">
+      <h1 className="text-2xl font-bold py-4">Trending</h1>
       {data.map((track, idx) => (
         <TrackTile
           key={track.id}

@@ -1,6 +1,6 @@
 
 .nav-rail {
-  @apply  fixed top-0 left-0 h-full w-16 border-r;
+  @apply  fixed top-0 left-0 h-full w-16;
 
   a.active {
     @apply bg-accent border-r-2 border-amber-400;
@@ -10,16 +10,17 @@
 
 .user-nav {
   a {
-    @apply p-2 rounded-md;
+    @apply p-2 px-4 rounded-md;
   }
   a.active {
-    @apply bg-secondary;
+    @apply bg-background;
   }
 }
 
 .library-table {
+  @apply bg-background;
   th {
-    @apply border-t;
+    @apply p-4 text-left border-b;
   }
   td {
     @apply p-4 border-b;

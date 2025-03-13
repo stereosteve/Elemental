@@ -22,5 +22,5 @@ export async function fauxTrending({ myId }: Args) {
 
   const tracks = await queryTracks({ ids: rows.map((r) => r.id), myId })
   const tracksById = keyBy(tracks, 'id')
-  return rows.map((r) => tracksById[r.id])
+  return rows.map((r) => tracksById[r.id]).filter(Boolean)
 }

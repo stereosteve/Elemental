@@ -21,7 +21,7 @@ export function UserHoverCard(props: Props) {
 
   const propUser = props.user
   const children = props.children || (
-    <Link to={urlFor.user(propUser)}>{propUser.name}</Link>
+    <Link to={urlFor.user(propUser)}>{propUser.name || propUser.handle}</Link>
   )
 
   const { data } = useQuery<{ user: UserRow }>({
@@ -38,7 +38,7 @@ export function UserHoverCard(props: Props) {
     <HoverCard onOpenChange={setIsOpen}>
       <HoverCardTrigger asChild>{children}</HoverCardTrigger>
       {user && (
-        <HoverCardContent className="w-80 p-0 overflow-hidden" side="left">
+        <HoverCardContent className="w-80 p-0 overflow-hidden" side="right">
           <div
             className="relative h-48 bg-cover bg-center"
             style={{
@@ -47,11 +47,13 @@ export function UserHoverCard(props: Props) {
           >
             <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black" />
 
-            <div className="absolute w-full bottom-0 p-4 flex gap-4 items-center">
+            <div className="absolute w-full bottom-0 p-4 flex gap-4 items-center text-background">
               <CidImage img={user.img} size={80} className="rounded-full" />
               <div>
-                <div className="text-lg font-bold">{user.name}</div>
-                <Link to={urlFor.user(user)}>{user.handle}</Link>
+                <div className="text-lg font-bold leading-4">{user.name}</div>
+                <Link to={urlFor.user(user)} className="text-sm">
+                  @{user.handle}
+                </Link>
               </div>
             </div>
           </div>

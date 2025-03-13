@@ -15,10 +15,13 @@ import { sql } from './db/db'
 import { queryMutuals } from './db/query-mutuals'
 import { readFile } from 'fs/promises'
 import { queryPlayHistory } from './db/user-play-history'
+import searchRoutes from './server_search'
 
 const app = new Hono()
 
 app.use(logger())
+
+app.route('', searchRoutes)
 
 app.get('/api/users', async (c) => {
   const ids = c.req.queries('id')
@@ -161,7 +164,9 @@ async function resolveHandle(handle: string) {
   return user_id
 }
 
+const port = 4201
+console.log(`serving on ${port}`)
 serve({
   fetch: app.fetch,
-  port: 4201,
+  port,
 })
