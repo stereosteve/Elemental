@@ -1,8 +1,5 @@
-- play history...
-- "notifs" - basically news about your tracks... and subscriber news... and some spam
+- "notifs" - basically news about your tracks... and subscriber news... milestones etc
 - better explore / home page
-- dark / light toggle
-- simulate follow / save / repost state manager stuff
 
 
 should have a play tile version of cid image
