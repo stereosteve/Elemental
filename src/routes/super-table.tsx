@@ -3,6 +3,8 @@ import React, { useEffect } from 'react'
 import { simpleFetch } from '@/client'
 import { CidImage } from '@/components/cid-image'
 import { SearchFilter } from '@/components/search-filter'
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { UserHoverCard } from '@/components/user-hover-card'
 import { formatDuration } from '@/lib/formatDuration'
@@ -25,8 +27,6 @@ import { useVirtualizer } from '@tanstack/react-virtual'
 import clsx from 'clsx'
 import { FilterXIcon, Loader2Icon } from 'lucide-react'
 import { useSearchParams } from 'react-router'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Button } from '@/components/ui/button'
 
 const fetchSize = 200
 
@@ -50,7 +50,6 @@ type FacetResponse = {
 
 export default function SuperTable() {
   const [searchParams, setSearchParams] = useSearchParams()
-  const searchParamString = searchParams.toString()
 
   function querySet(key: string, val: string) {
     searchParams.set(key, val)
@@ -66,12 +65,6 @@ export default function SuperTable() {
     setSearchParams(searchParams)
   }
 
-  const { data: facets } = useQuery<FacetResponse>({
-    queryKey: [`/api/search/facet?${searchParamString}`],
-    refetchOnWindowFocus: false,
-    placeholderData: keepPreviousData,
-  })
-
   return (
     <div className="p-2">
       <Input
@@ -83,44 +76,30 @@ export default function SuperTable() {
         className="p-5 bg-background"
       />
 
-      {facets && (
-        <div className="flex gap-4 p-2 pb-0">
-          <FilterBox name="Genre" fieldName="genre" buckets={facets['genre']} />
-          <FilterBox
-            name="Artist"
-            fieldName="artist"
-            buckets={facets['artist']}
-          />
-          <FilterBox name="BPM" fieldName="bpm" buckets={facets['bpm']} />
-          <FilterBox
-            name="Key"
-            fieldName="musicalKey"
-            buckets={facets['musicalKey']}
-          />
-          <FilterBox
-            name="Location"
-            fieldName="user_location"
-            buckets={facets['user_location']}
-          />
+      <div className="flex gap-4 p-2 pb-0">
+        <FilterBox name="Genre" fieldName="genre" />
+        <FilterBox name="Artist" fieldName="artist" />
+        <FilterBox name="BPM" fieldName="bpm" />
+        <FilterBox name="Key" fieldName="musicalKey" />
+        <FilterBox name="Location" fieldName="user_location" />
 
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              id="remix"
-              checked={searchParams.get('remix') == 'true'}
-              onCheckedChange={() => queryToggle('remix', 'true')}
-            />
-            <label htmlFor="remix" className="text-sm font-medium">
-              Remix
-            </label>
-          </div>
-
-          <div className="flex-grow" />
-
-          <Button onClick={() => setSearchParams()} variant="ghost">
-            <FilterXIcon />
-          </Button>
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            id="remix"
+            checked={searchParams.get('remix') == 'true'}
+            onCheckedChange={() => queryToggle('remix', 'true')}
+          />
+          <label htmlFor="remix" className="text-sm font-medium">
+            Remix
+          </label>
         </div>
-      )}
+
+        <div className="flex-grow" />
+
+        <Button onClick={() => setSearchParams()} variant="ghost">
+          <FilterXIcon />
+        </Button>
+      </div>
 
       <div className="flex gap-4 p-2 pb-0"></div>
 
@@ -132,13 +111,20 @@ export default function SuperTable() {
 function FilterBox({
   name,
   fieldName,
-  buckets,
 }: {
   name: string
   fieldName: keyof FacetResponse
-  buckets: AggBucket[]
 }) {
   const [searchParams, setSearchParams] = useSearchParams()
+  const [open, setOpen] = React.useState(false)
+
+  const { data, isFetching } = useQuery<AggBucket[]>({
+    queryKey: [`/api/search/facet/${fieldName}?` + searchParams.toString()],
+    enabled: open,
+    meta: {
+      quiet: true,
+    },
+  })
 
   function queryToggle(key: string, val: string) {
     if (searchParams.has(key, val)) {
@@ -152,7 +138,10 @@ function FilterBox({
   return (
     <SearchFilter
       name={name}
-      buckets={buckets}
+      buckets={data || []}
+      isFetching={isFetching}
+      open={open}
+      setOpen={setOpen}
       value={searchParams.get(fieldName) || ''}
       onChange={(v) => queryToggle(fieldName, v)}
     />

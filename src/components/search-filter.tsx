@@ -1,7 +1,5 @@
-import * as React from 'react'
 import { Check, ChevronsUpDown } from 'lucide-react'
 
-import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
   Command,
@@ -16,6 +14,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
+import { cn } from '@/lib/utils'
 
 type AggBucket = {
   key: string
@@ -24,14 +23,25 @@ type AggBucket = {
 
 type Props = {
   name: string
+  open: boolean
+  setOpen: (open: boolean) => void
+
+  isFetching: boolean
   buckets: AggBucket[]
+
   value: string
   onChange: (value: string) => void
 }
 
-export function SearchFilter({ name, buckets, value, onChange }: Props) {
-  const [open, setOpen] = React.useState(false)
-
+export function SearchFilter({
+  name,
+  open,
+  setOpen,
+  buckets,
+  value,
+  onChange,
+  isFetching,
+}: Props) {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -41,7 +51,7 @@ export function SearchFilter({ name, buckets, value, onChange }: Props) {
           aria-expanded={open}
           className="w-[200px] justify-between"
         >
-          {value ? buckets.find((b) => b.key == value)?.key : name}
+          {value ? value : name}
           <ChevronsUpDown className="opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -49,14 +59,15 @@ export function SearchFilter({ name, buckets, value, onChange }: Props) {
         <Command>
           <CommandInput placeholder="Search..." />
           <CommandList>
-            <CommandEmpty>Nothing doing</CommandEmpty>
+            <CommandEmpty>
+              {isFetching ? 'Loading' : 'Nothing doing'}
+            </CommandEmpty>
             <CommandGroup>
               {buckets.map((b) => (
                 <CommandItem
                   key={b.key}
                   value={b.key}
-                  onSelect={(currentValue) => {
-                    console.log('wut', currentValue)
+                  onSelect={() => {
                     onChange(b.key.toString())
                     setOpen(false)
                   }}

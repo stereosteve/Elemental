@@ -7,7 +7,7 @@ export const queryClient = new QueryClient({
       queryFn: async ({ queryKey }) => {
         return simpleFetch(queryKey[0] as string)
       },
-      staleTime: 5000,
+      staleTime: 30_000,
       refetchOnWindowFocus: false,
       refetchOnReconnect: false,
       refetchOnMount: false,

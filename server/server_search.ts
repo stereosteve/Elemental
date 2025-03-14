@@ -58,6 +58,12 @@ app.get('/api/search/facet', async (c) => {
   return c.json(keyedFacets)
 })
 
+app.get('/api/search/facet/:fieldName', async (c) => {
+  const fieldName = c.req.param('fieldName')
+  const facets = await facetField(c, fieldName)
+  return c.json(facets)
+})
+
 async function facetField(c: Context, fieldName: string) {
   const found = await client.search({
     index: 'tracks',
@@ -69,7 +75,7 @@ async function facetField(c: Context, fieldName: string) {
         [fieldName]: {
           terms: {
             field: FIELD_MAPPING[fieldName],
-            size: 1000,
+            size: 1500,
           },
         },
       },
