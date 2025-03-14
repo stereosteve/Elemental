@@ -5,9 +5,10 @@ import { populateStubs } from './populate-stubs'
 type Args = {
   userId: number
   myId?: number
+  before?: string
 }
 
-export async function userReposts({ userId, myId }: Args) {
+export async function userReposts({ userId, myId, before }: Args) {
   const limit = 100
   const stubs: FeedStub[] = await sql`
     select
@@ -18,6 +19,7 @@ export async function userReposts({ userId, myId }: Args) {
       created_at
     from reposts
     where user_id = ${userId}
+    ${before ? sql`and created_at < ${before}` : sql``}
     order by created_at desc
     limit ${limit}
   `

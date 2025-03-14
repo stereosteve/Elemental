@@ -73,10 +73,9 @@ app.get('/api/users/:handle/reposts', async (c) => {
   const reposts = await userReposts({
     userId,
     myId,
+    before: c.req.query('before'),
   })
-  return c.json({
-    reposts,
-  })
+  return c.json(reposts)
 })
 
 app.get('/api/users/:handle/mutuals', async (c) => {
