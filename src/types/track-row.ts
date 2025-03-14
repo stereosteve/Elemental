@@ -28,6 +28,9 @@ export type TrackRow = {
     handle: string
     name: string
     location?: string
+
+    // added for es
+    followerCount?: number
   }
 
   // personalization...

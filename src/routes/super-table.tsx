@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { simpleFetch } from '@/client'
 import { CidImage } from '@/components/cid-image'
@@ -53,6 +53,7 @@ type FacetResponse = {
 
 export default function SuperTable() {
   const [searchParams, setSearchParams] = useSearchParams()
+  const [q, setQ] = useState(searchParams.get('q') || '')
 
   function querySet(key: string, val: string) {
     searchParams.set(key, val)
@@ -78,8 +79,9 @@ export default function SuperTable() {
   return (
     <div className="p-4 flex flex-col gap-2 h-screen">
       <Input
-        value={searchParams.get('q') || ''}
+        value={q}
         onChange={(e) => {
+          setQ(e.target.value)
           querySet('q', e.target.value)
         }}
         placeholder="Search..."
@@ -109,7 +111,13 @@ export default function SuperTable() {
         <div className="text-sm font-medium text-secondary-foreground">
           {formatNumber(count)} Tracks
         </div>
-        <Button onClick={() => setSearchParams()} variant="ghost">
+        <Button
+          onClick={() => {
+            setQ('')
+            setSearchParams()
+          }}
+          variant="ghost"
+        >
           <FilterXIcon />
         </Button>
       </div>
@@ -181,7 +189,7 @@ function VirtualTable() {
       {
         header: 'Title',
         accessorKey: 'title',
-        size: 300,
+        size: 400,
         // cell: (info) => info.getValue(),
       },
       {
@@ -233,6 +241,7 @@ function VirtualTable() {
       {
         header: 'Followers',
         accessorKey: 'user.followerCount',
+        accessorFn: (t) => formatNumber(t.user.followerCount),
         meta: {
           // className: 'justify-end',
         },
@@ -240,6 +249,7 @@ function VirtualTable() {
       {
         header: 'Reposts',
         accessorKey: 'repostCount',
+        accessorFn: (t) => formatNumber(t.repostCount),
         meta: {
           // className: 'justify-end',
         },

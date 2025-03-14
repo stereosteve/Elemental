@@ -94,6 +94,7 @@ async function facetField(c: Context, fieldName: string) {
 // build query dsl from params
 // with option to omit a field for sake of aggregation...
 function buildQueryContainer(c: Context, omitFilter?: string) {
+  const must: QueryContainer[] = []
   const filter: QueryContainer[] = []
 
   if (c.req.query('remix') == 'true') {
@@ -114,12 +115,30 @@ function buildQueryContainer(c: Context, omitFilter?: string) {
     }
   }
 
+  const advanced = c.req.query('advanced')
+  if (advanced) {
+    must.push({
+      query_string: {
+        query: advanced,
+      },
+    })
+  }
+
+  const q = (c.req.query('q') || '').trim()
+
   const dsl: QueryContainer = {
     bool: {
-      must: [
+      must,
+      should: [
         {
           simple_query_string: {
-            query: (c.req.query('q') || '') + '*',
+            query: q + '*',
+            default_operator: 'AND',
+          },
+        },
+        {
+          simple_query_string: {
+            query: q.replace(/\s+/g, '') + '*',
           },
         },
       ],
