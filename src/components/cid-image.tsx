@@ -34,6 +34,7 @@ export function CidImage({ img, size, className, ...props }: CidImageProps) {
 
   const e = img ? (
     <img
+      key={img}
       loading="lazy"
       decoding="async"
       src={`${CONTENT_NODE}/content/${img}/${version}.jpg`}

@@ -12,6 +12,7 @@ const FIELD_MAPPING: Record<string, string> = {
   genre: 'genre.keyword',
   musicalKey: 'musicalKey',
   bpm: 'bpm',
+  user_location: 'user.location.keyword',
 }
 
 app.get('/api/search', async (c) => {
@@ -50,7 +51,7 @@ app.get('/api/search', async (c) => {
 })
 
 app.get('/api/search/facet', async (c) => {
-  const fields = ['genre', 'artist', 'bpm', 'musicalKey']
+  const fields = ['genre', 'artist', 'bpm', 'musicalKey', 'user_location']
   // const fields = ['bpm']
   const facets = await Promise.all(fields.map((f) => facetField(c, f)))
   const keyedFacets = Object.fromEntries(fields.map((f, i) => [f, facets[i]]))
@@ -61,7 +62,7 @@ async function facetField(c: Context, fieldName: string) {
   const found = await client.search({
     index: 'tracks',
     body: {
-      query: buildQueryContainer(c),
+      query: buildQueryContainer(c, fieldName),
       size: 0,
 
       aggs: {
@@ -76,7 +77,9 @@ async function facetField(c: Context, fieldName: string) {
   })
 
   // @ts-ignore
-  return found.body.aggregations[fieldName].buckets
+  return found.body.aggregations[fieldName].buckets.filter((b) =>
+    Boolean(b.key)
+  )
 }
 
 // build query dsl from params
@@ -91,13 +94,19 @@ function buildQueryContainer(c: Context, omitFilter?: string) {
           },
         },
       ],
-      filter: [],
+      filter: [
+        // {
+        //   exists: {
+        //     field: 'remixOf',
+        //   },
+        // },
+      ],
     },
   }
 
   for (const [queryKey, osKey] of Object.entries(FIELD_MAPPING)) {
     if (queryKey == omitFilter) continue
-    const terms = c.req.queries(queryKey)
+    const terms = c.req.queries(queryKey)?.filter(Boolean)
     if (terms?.length) {
       // @ts-ignore
       dsl.bool.filter.push({

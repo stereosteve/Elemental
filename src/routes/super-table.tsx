@@ -2,8 +2,8 @@ import React, { useEffect } from 'react'
 
 import { simpleFetch } from '@/client'
 import { CidImage } from '@/components/cid-image'
+import { SearchFilter } from '@/components/search-filter'
 import { Input } from '@/components/ui/input'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import { UserHoverCard } from '@/components/user-hover-card'
 import { formatDuration } from '@/lib/formatDuration'
 import { DJContext, useDJ } from '@/state/dj'
@@ -43,6 +43,7 @@ type FacetResponse = {
   genre: AggBucket[]
   bpm: AggBucket[]
   musicalKey: AggBucket[]
+  user_location: AggBucket[]
 }
 
 export default function SuperTable() {
@@ -75,12 +76,27 @@ export default function SuperTable() {
 
       {facets && (
         <div className="flex gap-4 p-2 pb-0">
-          <FilterBox fieldName="genre" buckets={facets['genre']} />
-          <FilterBox fieldName="artist" buckets={facets['artist']} />
-          <FilterBox fieldName="bpm" buckets={facets['bpm']} />
-          <FilterBox fieldName="musicalKey" buckets={facets['musicalKey']} />
+          <FilterBox name="Genre" fieldName="genre" buckets={facets['genre']} />
+          <FilterBox
+            name="Artist"
+            fieldName="artist"
+            buckets={facets['artist']}
+          />
+          <FilterBox name="BPM" fieldName="bpm" buckets={facets['bpm']} />
+          <FilterBox
+            name="Key"
+            fieldName="musicalKey"
+            buckets={facets['musicalKey']}
+          />
+          <FilterBox
+            name="Location"
+            fieldName="user_location"
+            buckets={facets['user_location']}
+          />
         </div>
       )}
+
+      <div className="flex gap-4 p-2 pb-0"></div>
 
       <VirtualTable />
     </div>
@@ -88,9 +104,11 @@ export default function SuperTable() {
 }
 
 function FilterBox({
+  name,
   fieldName,
   buckets,
 }: {
+  name: string
   fieldName: keyof FacetResponse
   buckets: AggBucket[]
 }) {
@@ -106,24 +124,12 @@ function FilterBox({
   }
 
   return (
-    <div className="bg-background flex-1 border  text-sm">
-      <div className="p-2 py-1 font-bold">{fieldName}</div>
-      <ScrollArea className="h-32">
-        {buckets.map((b) => (
-          <div
-            key={b.key}
-            onClick={() => queryToggle(fieldName, b.key)}
-            className={clsx(
-              'flex p-2 py-1 cursor-pointer hover:bg-secondary',
-              searchParams.has(fieldName, b.key) && 'bg-amber-300'
-            )}
-          >
-            <div className="flex-grow">{b.key}</div>
-            <div>{b.doc_count}</div>
-          </div>
-        ))}
-      </ScrollArea>
-    </div>
+    <SearchFilter
+      name={name}
+      buckets={buckets}
+      value={searchParams.get(fieldName) || ''}
+      onChange={(v) => queryToggle(fieldName, v)}
+    />
   )
 }
 
@@ -206,6 +212,13 @@ function VirtualTable() {
       {
         header: 'Reposts',
         accessorKey: 'repostCount',
+        meta: {
+          // className: 'justify-end',
+        },
+      },
+      {
+        header: 'Location',
+        accessorKey: 'user.location',
         meta: {
           // className: 'justify-end',
         },
@@ -406,7 +419,7 @@ function VirtualTable() {
                   }}
                   className={clsx(
                     dj.isPlaying({ track: row.original, djContext: djc }) &&
-                      'bg-amber-100'
+                      'bg-accent'
                   )}
                 >
                   {row.getVisibleCells().map((cell) => {
