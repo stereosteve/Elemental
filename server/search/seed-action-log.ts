@@ -1,4 +1,4 @@
-import { Property } from '@opensearch-project/opensearch/api/_types/_common.mapping.js'
+// import { Property } from '@opensearch-project/opensearch/api/_types/_common.mapping.js'
 import { sql } from 'server/db/db'
 import { client } from './opensearch-client'
 
@@ -7,15 +7,15 @@ export async function createIndex(name: string, drop: boolean) {
     await client.indices.delete({ index: name }, { ignore: [404] })
   }
 
-  const textWithKeyword: Property = {
-    type: 'text',
-    fields: {
-      keyword: {
-        type: 'keyword',
-        ignore_above: 256,
-      },
-    },
-  }
+  // const textWithKeyword: Property = {
+  //   type: 'text',
+  //   fields: {
+  //     keyword: {
+  //       type: 'keyword',
+  //       ignore_above: 256,
+  //     },
+  //   },
+  // }
 
   await client.indices.create({
     index: name,

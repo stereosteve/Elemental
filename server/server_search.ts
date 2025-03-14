@@ -51,12 +51,14 @@ app.get('/api/search', async (c) => {
   return c.json(found)
 })
 
-app.get('/api/search/facet', async (c) => {
-  const fields = ['genre', 'artist', 'bpm', 'musicalKey', 'user_location']
-  // const fields = ['bpm']
-  const facets = await Promise.all(fields.map((f) => facetField(c, f)))
-  const keyedFacets = Object.fromEntries(fields.map((f, i) => [f, facets[i]]))
-  return c.json(keyedFacets)
+app.get('/api/search/count', async (c) => {
+  const resp = await client.count({
+    index: 'tracks',
+    body: {
+      query: buildQueryContainer(c),
+    },
+  })
+  return c.json(resp.body.count)
 })
 
 app.get('/api/search/facet/:fieldName', async (c) => {

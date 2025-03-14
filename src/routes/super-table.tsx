@@ -29,6 +29,7 @@ import { FilterXIcon, Loader2Icon } from 'lucide-react'
 import { useSearchParams } from 'react-router'
 import { sortCodec } from '@/lib/sortCodec'
 import { useDebounce } from '@uidotdev/usehooks'
+import { formatNumber } from '@/lib/formatNumber'
 
 const fetchSize = 200
 
@@ -67,8 +68,15 @@ export default function SuperTable() {
     setSearchParams(searchParams)
   }
 
+  const { data: count } = useQuery<number>({
+    queryKey: [`/api/search/count?${searchParams}`],
+    meta: {
+      quiet: true,
+    },
+  })
+
   return (
-    <div className="p-2">
+    <div className="p-4 flex flex-col gap-2 h-screen">
       <Input
         value={searchParams.get('q') || ''}
         onChange={(e) => {
@@ -78,7 +86,7 @@ export default function SuperTable() {
         className="p-5 bg-background"
       />
 
-      <div className="flex gap-4 p-2 pb-0">
+      <div className="flex gap-4 items-center">
         <FilterBox name="Genre" fieldName="genre" />
         <FilterBox name="Artist" fieldName="artist" />
         <FilterBox name="BPM" fieldName="bpm" />
@@ -98,12 +106,13 @@ export default function SuperTable() {
 
         <div className="flex-grow" />
 
+        <div className="text-sm font-medium text-secondary-foreground">
+          {formatNumber(count)} Tracks
+        </div>
         <Button onClick={() => setSearchParams()} variant="ghost">
           <FilterXIcon />
         </Button>
       </div>
-
-      <div className="flex gap-4 p-2 pb-0"></div>
 
       <VirtualTable />
     </div>
@@ -350,123 +359,110 @@ function VirtualTable() {
   }
 
   return (
-    <div className="p-2">
-      <div
-        className="border bg-background"
-        onScroll={(e) => fetchMoreOnBottomReached(e.currentTarget)}
-        ref={tableContainerRef}
-        style={{
-          overflow: 'auto', //our scrollable table container
-          position: 'relative', //needed for sticky header
-          height: '600px', //should be a fixed height
-        }}
-      >
-        {/* Even though we're still using sematic table tags, we must use CSS grid and flexbox for dynamic row heights */}
-        <table className="super-table" style={{ display: 'grid' }}>
-          <thead
-            className="bg-background"
-            style={{
-              display: 'grid',
-              position: 'sticky',
-              top: 0,
-              zIndex: 1,
-            }}
-          >
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr
-                key={headerGroup.id}
-                style={{ display: 'flex', width: '100%' }}
-              >
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <th
-                      key={header.id}
-                      style={{
-                        display: 'flex',
-                        width: header.getSize(),
+    <div
+      className="border bg-background flex-grow m-2 mb-6"
+      onScroll={(e) => fetchMoreOnBottomReached(e.currentTarget)}
+      ref={tableContainerRef}
+      style={{
+        overflow: 'auto', //our scrollable table container
+        position: 'relative', //needed for sticky header
+        // height: '700px', //should be a fixed height
+      }}
+    >
+      {/* Even though we're still using sematic table tags, we must use CSS grid and flexbox for dynamic row heights */}
+      <table className="super-table" style={{ display: 'grid' }}>
+        <thead
+          className="bg-background"
+          style={{
+            display: 'grid',
+            position: 'sticky',
+            top: 0,
+            zIndex: 1,
+          }}
+        >
+          {table.getHeaderGroups().map((headerGroup) => (
+            <tr key={headerGroup.id} style={{ display: 'flex', width: '100%' }}>
+              {headerGroup.headers.map((header) => {
+                return (
+                  <th
+                    key={header.id}
+                    style={{
+                      display: 'flex',
+                      width: header.getSize(),
+                    }}
+                  >
+                    <div
+                      {...{
+                        className: header.column.getCanSort()
+                          ? 'cursor-pointer select-none'
+                          : '',
+                        onClick: header.column.getToggleSortingHandler(),
                       }}
                     >
-                      <div
-                        {...{
-                          className: header.column.getCanSort()
-                            ? 'cursor-pointer select-none'
-                            : '',
-                          onClick: header.column.getToggleSortingHandler(),
-                        }}
-                      >
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                        {{
-                          asc: ' 🔼',
-                          desc: ' 🔽',
-                        }[header.column.getIsSorted() as string] ?? null}
-                      </div>
-                    </th>
+                      {flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                      {{
+                        asc: ' 🔼',
+                        desc: ' 🔽',
+                      }[header.column.getIsSorted() as string] ?? null}
+                    </div>
+                  </th>
+                )
+              })}
+            </tr>
+          ))}
+        </thead>
+        <tbody
+          style={{
+            display: 'grid',
+            height: `${rowVirtualizer.getTotalSize()}px`, //tells scrollbar how big the table is
+            position: 'relative', //needed for absolute positioning of rows
+          }}
+        >
+          {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+            const row = rows[virtualRow.index] as Row<TrackRow>
+            return (
+              <tr
+                onClick={() => dj.play(row.original, djc)}
+                data-index={virtualRow.index} //needed for dynamic row height measurement
+                ref={(node) => rowVirtualizer.measureElement(node)} //measure dynamic row height
+                key={row.id}
+                style={{
+                  display: 'flex',
+                  position: 'absolute',
+                  transform: `translateY(${virtualRow.start}px)`, //this should always be a `style` as it changes on scroll
+                  width: '100%',
+                }}
+                className={clsx(
+                  dj.isPlaying({ track: row.original, djContext: djc }) &&
+                    'bg-accent'
+                )}
+              >
+                {row.getVisibleCells().map((cell) => {
+                  return (
+                    <td
+                      key={cell.id}
+                      className={(cell.column.columnDef.meta as any)?.className}
+                      style={{
+                        fontSize: '95%',
+                        display: 'flex',
+                        width: cell.column.getSize(),
+                      }}
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </td>
                   )
                 })}
               </tr>
-            ))}
-          </thead>
-          <tbody
-            style={{
-              display: 'grid',
-              height: `${rowVirtualizer.getTotalSize()}px`, //tells scrollbar how big the table is
-              position: 'relative', //needed for absolute positioning of rows
-            }}
-          >
-            {rowVirtualizer.getVirtualItems().map((virtualRow) => {
-              const row = rows[virtualRow.index] as Row<TrackRow>
-              return (
-                <tr
-                  onClick={() => dj.play(row.original, djc)}
-                  data-index={virtualRow.index} //needed for dynamic row height measurement
-                  ref={(node) => rowVirtualizer.measureElement(node)} //measure dynamic row height
-                  key={row.id}
-                  style={{
-                    display: 'flex',
-                    position: 'absolute',
-                    transform: `translateY(${virtualRow.start}px)`, //this should always be a `style` as it changes on scroll
-                    width: '100%',
-                  }}
-                  className={clsx(
-                    dj.isPlaying({ track: row.original, djContext: djc }) &&
-                      'bg-accent'
-                  )}
-                >
-                  {row.getVisibleCells().map((cell) => {
-                    return (
-                      <td
-                        key={cell.id}
-                        className={
-                          (cell.column.columnDef.meta as any)?.className
-                        }
-                        style={{
-                          fontSize: '95%',
-                          display: 'flex',
-                          width: cell.column.getSize(),
-                        }}
-                      >
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </td>
-                    )
-                  })}
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
-      </div>
-
-      {/* HIT COUNT */}
-      <div className="p-2 flex gap-2 text-muted-foreground">
-        <div>{totalDBRowCount} rows</div>
-        {isFetching && <div>Fetching More...</div>}
-      </div>
+            )
+          })}
+        </tbody>
+      </table>
     </div>
   )
 }

@@ -15,6 +15,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
+import { formatNumber } from '@/lib/formatNumber'
 
 type AggBucket = {
   key: string
@@ -78,7 +79,9 @@ export function SearchFilter({
                   />
                   <div className="flex-1">{b.key}</div>
 
-                  <div>{b.doc_count}</div>
+                  <div className="text-secondary-foreground">
+                    {formatNumber(b.doc_count)}
+                  </div>
                 </CommandItem>
               ))}
             </CommandGroup>
