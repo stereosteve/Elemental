@@ -85,6 +85,26 @@ async function facetField(c: Context, fieldName: string) {
 // build query dsl from params
 // with option to omit a field for sake of aggregation...
 function buildQueryContainer(c: Context, omitFilter?: string) {
+  const filter: QueryContainer[] = []
+
+  if (c.req.query('remix') == 'true') {
+    filter.push({
+      exists: { field: 'remixOf' },
+    })
+  }
+
+  for (const [queryKey, osKey] of Object.entries(FIELD_MAPPING)) {
+    if (queryKey == omitFilter) continue
+    const terms = c.req.queries(queryKey)?.filter(Boolean)
+    if (terms?.length) {
+      filter.push({
+        terms: {
+          [osKey]: terms,
+        },
+      })
+    }
+  }
+
   const dsl: QueryContainer = {
     bool: {
       must: [
@@ -94,27 +114,8 @@ function buildQueryContainer(c: Context, omitFilter?: string) {
           },
         },
       ],
-      filter: [
-        // {
-        //   exists: {
-        //     field: 'remixOf',
-        //   },
-        // },
-      ],
+      filter,
     },
-  }
-
-  for (const [queryKey, osKey] of Object.entries(FIELD_MAPPING)) {
-    if (queryKey == omitFilter) continue
-    const terms = c.req.queries(queryKey)?.filter(Boolean)
-    if (terms?.length) {
-      // @ts-ignore
-      dsl.bool.filter.push({
-        terms: {
-          [osKey]: terms,
-        },
-      })
-    }
   }
 
   return dsl

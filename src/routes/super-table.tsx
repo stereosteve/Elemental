@@ -23,8 +23,10 @@ import {
 } from '@tanstack/react-table'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import clsx from 'clsx'
-import { Loader2Icon } from 'lucide-react'
+import { FilterXIcon, Loader2Icon } from 'lucide-react'
 import { useSearchParams } from 'react-router'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Button } from '@/components/ui/button'
 
 const fetchSize = 200
 
@@ -49,10 +51,18 @@ type FacetResponse = {
 export default function SuperTable() {
   const [searchParams, setSearchParams] = useSearchParams()
   const searchParamString = searchParams.toString()
-  const [q, setQ] = React.useState(searchParams.get('q') || '')
 
   function querySet(key: string, val: string) {
     searchParams.set(key, val)
+    setSearchParams(searchParams)
+  }
+
+  function queryToggle(key: string, val: string) {
+    if (searchParams.has(key, val)) {
+      searchParams.delete(key, val)
+    } else {
+      searchParams.set(key, val)
+    }
     setSearchParams(searchParams)
   }
 
@@ -65,10 +75,9 @@ export default function SuperTable() {
   return (
     <div className="p-2">
       <Input
-        value={q}
+        value={searchParams.get('q') || ''}
         onChange={(e) => {
-          setQ(e.target.value)
-          querySet('q', e.target.value)
+          querySet('q', e.target.value.trim())
         }}
         placeholder="Search..."
         className="p-5 bg-background"
@@ -93,6 +102,23 @@ export default function SuperTable() {
             fieldName="user_location"
             buckets={facets['user_location']}
           />
+
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="remix"
+              checked={searchParams.get('remix') == 'true'}
+              onCheckedChange={() => queryToggle('remix', 'true')}
+            />
+            <label htmlFor="remix" className="text-sm font-medium">
+              Remix
+            </label>
+          </div>
+
+          <div className="flex-grow" />
+
+          <Button onClick={() => setSearchParams()} variant="ghost">
+            <FilterXIcon />
+          </Button>
         </div>
       )}
 
@@ -179,6 +205,7 @@ function VirtualTable() {
         header: 'Released',
         accessorKey: 'releaseDate',
         accessorFn: (track) => new Date(track.releaseDate).toLocaleDateString(),
+        sortDescFirst: true,
         meta: {
           // className: 'justify-end',
         },
@@ -187,6 +214,7 @@ function VirtualTable() {
         header: 'Length',
         accessorKey: 'duration',
         accessorFn: (track) => formatDuration(track.duration),
+        sortDescFirst: true,
         meta: {
           // className: 'justify-end',
         },
@@ -450,7 +478,7 @@ function VirtualTable() {
       </div>
 
       {/* HIT COUNT */}
-      <div className="p-2 flex gap-2">
+      <div className="p-2 flex gap-2 text-muted-foreground">
         <div>{totalDBRowCount} rows</div>
         {isFetching && <div>Fetching More...</div>}
       </div>
