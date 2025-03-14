@@ -1,6 +1,7 @@
 import { Context, Hono } from 'hono'
 import { client } from './search/opensearch-client'
 import { QueryContainer } from '@opensearch-project/opensearch/api/_types/_common.query_dsl.js'
+import { sortCodec } from '@/lib/sortCodec'
 
 const app = new Hono()
 
@@ -25,7 +26,7 @@ app.get('/api/search', async (c) => {
 
   const querySort = c.req.query('sort')
   if (querySort) {
-    const sortObjs = JSON.parse(querySort) as { id: string; desc: boolean }[]
+    const sortObjs = sortCodec.decode(querySort)
     if (sortObjs.length) {
       sort = sortObjs.map((row) => {
         const k = FIELD_MAPPING[row.id] || row.id

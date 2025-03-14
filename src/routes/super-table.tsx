@@ -27,6 +27,8 @@ import { useVirtualizer } from '@tanstack/react-virtual'
 import clsx from 'clsx'
 import { FilterXIcon, Loader2Icon } from 'lucide-react'
 import { useSearchParams } from 'react-router'
+import { sortCodec } from '@/lib/sortCodec'
+import { useDebounce } from '@uidotdev/usehooks'
 
 const fetchSize = 200
 
@@ -70,7 +72,7 @@ export default function SuperTable() {
       <Input
         value={searchParams.get('q') || ''}
         onChange={(e) => {
-          querySet('q', e.target.value.trim())
+          querySet('q', e.target.value)
         }}
         placeholder="Search..."
         className="p-5 bg-background"
@@ -151,10 +153,10 @@ function FilterBox({
 function VirtualTable() {
   const dj = useDJ()
   const [searchParams, setSearchParams] = useSearchParams()
-  const searchParamString = searchParams.toString()
+  const searchParamString = useDebounce(searchParams.toString(), 200)
 
   const sortParam = searchParams.get('sort')
-  const sorting = sortParam ? JSON.parse(sortParam) : []
+  const sorting = sortParam ? sortCodec.decode(sortParam) : []
 
   const tableContainerRef = React.useRef<HTMLDivElement>(null)
 
@@ -246,17 +248,11 @@ function VirtualTable() {
 
   const { data, fetchNextPage, isFetching, isLoading } =
     useInfiniteQuery<TrackSearchResponse>({
-      queryKey: [
-        'super-table',
-        searchParamString,
-        sorting, //refetch when sorting changes
-      ],
+      queryKey: ['super-table', searchParamString],
       queryFn: async ({ pageParam = 0 }) => {
         const start = (pageParam as number) * fetchSize
-        const sort = encodeURIComponent(JSON.stringify(sorting))
-
         const fetchedData = await simpleFetch(
-          `/api/search?from=${start}&sort=${sort}&` + searchParamString
+          `/api/search?from=${start}&` + searchParamString
         )
         const tracks = fetchedData.body.hits.hits.map((h: any) => h._source)
         return {
@@ -318,7 +314,7 @@ function VirtualTable() {
     // debugTable: true,
     onSortingChange: (updater: any) => {
       const s2 = updater(sorting)
-      searchParams.set('sort', JSON.stringify(s2))
+      searchParams.set('sort', sortCodec.encode(s2))
       setSearchParams(searchParams)
     },
   })
