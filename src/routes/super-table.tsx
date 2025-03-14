@@ -70,7 +70,7 @@ export default function SuperTable() {
           querySet('q', e.target.value)
         }}
         placeholder="Search..."
-        className="p-6 bg-background"
+        className="p-5 bg-background"
       />
 
       {facets && (
@@ -106,15 +106,15 @@ function FilterBox({
   }
 
   return (
-    <div className="bg-background flex-1">
+    <div className="bg-background flex-1 border  text-sm">
       <div className="p-2 py-1 font-bold">{fieldName}</div>
-      <ScrollArea className="p-2 h-48">
+      <ScrollArea className="h-32">
         {buckets.map((b) => (
           <div
             key={b.key}
             onClick={() => queryToggle(fieldName, b.key)}
             className={clsx(
-              'flex p-1 cursor-pointer hover:bg-secondary',
+              'flex p-2 py-1 cursor-pointer hover:bg-secondary',
               searchParams.has(fieldName, b.key) && 'bg-amber-300'
             )}
           >
@@ -324,9 +324,9 @@ function VirtualTable() {
   }
 
   return (
-    <div className="px-2">
+    <div className="p-2">
       <div
-        className="table-container bg-background"
+        className="border bg-background"
         onScroll={(e) => fetchMoreOnBottomReached(e.currentTarget)}
         ref={tableContainerRef}
         style={{
@@ -336,7 +336,7 @@ function VirtualTable() {
         }}
       >
         {/* Even though we're still using sematic table tags, we must use CSS grid and flexbox for dynamic row heights */}
-        <table style={{ display: 'grid' }}>
+        <table className="super-table" style={{ display: 'grid' }}>
           <thead
             className="bg-background"
             style={{
@@ -417,6 +417,7 @@ function VirtualTable() {
                           (cell.column.columnDef.meta as any)?.className
                         }
                         style={{
+                          fontSize: '95%',
                           display: 'flex',
                           width: cell.column.getSize(),
                         }}
