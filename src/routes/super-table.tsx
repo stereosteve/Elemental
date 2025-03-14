@@ -1,33 +1,30 @@
 import React, { useEffect } from 'react'
-import './super-table.css'
 
-import {
-  ColumnDef,
-  flexRender,
-  getCoreRowModel,
-  getSortedRowModel,
-  OnChangeFn,
-  Row,
-  SortingState,
-  useReactTable,
-} from '@tanstack/react-table'
+import { simpleFetch } from '@/client'
+import { CidImage } from '@/components/cid-image'
+import { Input } from '@/components/ui/input'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { UserHoverCard } from '@/components/user-hover-card'
+import { formatDuration } from '@/lib/formatDuration'
+import { DJContext, useDJ } from '@/state/dj'
+import { TrackRow } from '@/types/track-row'
 import {
   keepPreviousData,
   useInfiniteQuery,
   useQuery,
 } from '@tanstack/react-query'
+import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  getSortedRowModel,
+  Row,
+  useReactTable,
+} from '@tanstack/react-table'
 import { useVirtualizer } from '@tanstack/react-virtual'
-import { simpleFetch } from '@/client'
-import { UserHoverCard } from '@/components/user-hover-card'
-import { Input } from '@/components/ui/input'
-import { useSearchParams } from 'react-router'
-import { TrackRow } from '@/types/track-row'
-import { DJContext, useDJ } from '@/state/dj'
 import clsx from 'clsx'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { CidImage } from '@/components/cid-image'
 import { Loader2Icon } from 'lucide-react'
-import { formatDuration } from '@/lib/formatDuration'
+import { useSearchParams } from 'react-router'
 
 const fetchSize = 200
 
@@ -132,11 +129,13 @@ function FilterBox({
 
 function VirtualTable() {
   const dj = useDJ()
-  const [searchParams] = useSearchParams()
-  const [sorting, setSorting] = React.useState<SortingState>([])
-  const tableContainerRef = React.useRef<HTMLDivElement>(null)
-
+  const [searchParams, setSearchParams] = useSearchParams()
   const searchParamString = searchParams.toString()
+
+  const sortParam = searchParams.get('sort')
+  const sorting = sortParam ? JSON.parse(sortParam) : []
+
+  const tableContainerRef = React.useRef<HTMLDivElement>(null)
 
   const columns = React.useMemo<ColumnDef<TrackRow>[]>(
     () => [
@@ -287,6 +286,11 @@ function VirtualTable() {
     getSortedRowModel: getSortedRowModel(),
     manualSorting: true,
     // debugTable: true,
+    onSortingChange: (updater: any) => {
+      const s2 = updater(sorting)
+      searchParams.set('sort', JSON.stringify(s2))
+      setSearchParams(searchParams)
+    },
   })
 
   function scrollToTop() {
@@ -295,20 +299,8 @@ function VirtualTable() {
     }
   }
 
-  // scroll to top when sorting changes
-  const handleSortingChange: OnChangeFn<SortingState> = (updater) => {
-    setSorting(updater)
-    scrollToTop()
-  }
-
   // scroll to top when data changes
   useEffect(scrollToTop, [searchParamString])
-
-  //since this table option is derived from table row model state, we're using the table.setOptions utility
-  table.setOptions((prev) => ({
-    ...prev,
-    onSortingChange: handleSortingChange,
-  }))
 
   const { rows } = table.getRowModel()
 

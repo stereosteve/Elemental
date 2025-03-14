@@ -17,7 +17,7 @@ export const sql = postgres(process.env.discoveryDbUrl || '', {
       to: 1114,
       from: [1114],
       serialize: (v: string) => v,
-      parse: (v: string) => v,
+      parse: (v: string) => new Date(Date.parse(v + 'Z')),
     },
   },
 })

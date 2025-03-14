@@ -38,8 +38,8 @@ export async function createIndex(name: string, drop: boolean) {
           tags: textWithKeyword,
           releaseDate: {
             type: 'date',
-            format:
-              'yyyy-MM-dd HH:mm:ss.SSSSSS||yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis',
+            // format:
+            //   'yyyy-MM-dd HH:mm:ss.SSSSSS||yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis',
           },
           musicalKey: {
             type: 'keyword',
@@ -142,7 +142,6 @@ async function seedTracks() {
     index: indexName,
     datasource: rows,
     onDocument(doc) {
-      doc.releaseDate = doc.releaseDate.substring(0, 19)
       // console.log(doc)
       return { index: { _index: indexName, _id: `track:${doc!.id}` } }
     },
