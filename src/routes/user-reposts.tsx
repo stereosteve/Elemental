@@ -25,7 +25,7 @@ export default function UserReposts() {
       initialPageParam: '',
       getNextPageParam: (reposts) => {
         if (!reposts.length) return null
-        return reposts.at(-1)?.created_at
+        return reposts.at(-1)?.createdAt
       },
     })
 
@@ -39,7 +39,7 @@ export default function UserReposts() {
 
   let lastDate = ''
   function dateHeader(stub: FeedStub) {
-    const date = new Date(stub.created_at).toLocaleDateString()
+    const date = new Date(stub.createdAt).toLocaleDateString()
     if (date == lastDate) return null
     lastDate = date
     return (

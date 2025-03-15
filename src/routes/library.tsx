@@ -35,7 +35,7 @@ export function Library() {
       getNextPageParam: (lastPage) => {
         // this should match limit in user library query
         if (lastPage.length < 100) return null
-        return lastPage[lastPage.length - 1].created_at
+        return lastPage[lastPage.length - 1].createdAt
       },
       enabled: !!myHandle,
     })
@@ -110,7 +110,7 @@ export function Library() {
                 </div>
               </td>
               <td>{formatDate(stub.track!.createdAt)}</td>
-              <td title={stub.created_at}>{formatDate(stub.created_at)}</td>
+              <td title={stub.createdAt}>{formatDate(stub.createdAt)}</td>
               {/* <td>{stub.track!.duration}</td> */}
               {/* <td>{stub.track!.playCount}</td> */}
               <td>{stub.track!.repostCount}</td>

@@ -72,11 +72,13 @@ export async function feed(myId: number, before?: string) {
     order by created_at asc
   `
 
+  // console.log(stubs)
+
   // remove duplicates
   // todo: remove tracks that appear in playlist...
   const seen = new Set()
   stubs = stubs.filter((stub) => {
-    const k = `${stub.obj_type}:${stub.obj_id}`
+    const k = `${stub.objType}:${stub.objId}`
     const ok = !seen.has(k)
     seen.add(k)
     return ok

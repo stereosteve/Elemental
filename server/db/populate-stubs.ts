@@ -9,15 +9,13 @@ type Args = {
 }
 
 export async function populateStubs({ stubs, myId }: Args) {
-  const actorIds = stubs.map((s) => s.actor_id).filter(Boolean)
+  const actorIds = stubs.map((s) => s.actorId).filter(Boolean)
 
-  const trackIds = stubs
-    .filter((s) => s.obj_type == 'track')
-    .map((s) => s.obj_id)
+  const trackIds = stubs.filter((s) => s.objType == 'track').map((s) => s.objId)
 
   const playlistIds = stubs
-    .filter((s) => s.obj_type != 'track')
-    .map((s) => s.obj_id)
+    .filter((s) => s.objType != 'track')
+    .map((s) => s.objId)
 
   const [actors, tracks, playlists] = await Promise.all([
     queryUsers({ ids: actorIds, myId }),
@@ -26,11 +24,11 @@ export async function populateStubs({ stubs, myId }: Args) {
   ])
 
   for (const stub of stubs) {
-    stub.actor = actors.find((a) => a.id == stub.actor_id)
-    if (stub.obj_type == 'track') {
-      stub.track = tracks.find((t) => t.id == stub.obj_id)
+    stub.actor = actors.find((a) => a.id == stub.actorId)
+    if (stub.objType == 'track') {
+      stub.track = tracks.find((t) => t.id == stub.objId)
     } else {
-      stub.playlist = playlists.find((p) => p.id == stub.obj_id)
+      stub.playlist = playlists.find((p) => p.id == stub.objId)
     }
   }
 

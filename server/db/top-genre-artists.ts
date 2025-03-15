@@ -34,11 +34,11 @@ export async function genreArtists() {
   order by genre_followers desc
   `
 
-  const userIds = rows.flatMap((r) => r.genre_users)
+  const userIds = rows.flatMap((r) => r.genreUsers)
   const users = await queryUsers({ ids: userIds })
   const usersById = keyBy(users, 'id')
   return rows.map((row) => ({
     genre: row.genre as string,
-    users: row.genre_users.map((id: number) => usersById[id]) as UserRow[],
+    users: row.genreUsers.map((id: number) => usersById[id]) as UserRow[],
   }))
 }

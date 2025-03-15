@@ -57,7 +57,7 @@ export async function userLibrary({ userId, myId, before }: Args) {
   // but we don't want duplicate rows for both save + repost... so unique it
   const seen = new Set()
   stubs = stubs.filter((stub) => {
-    const k = `${stub.obj_type}:${stub.obj_id}`
+    const k = `${stub.objType}:${stub.objId}`
     const ok = !seen.has(k)
     seen.add(k)
     return ok

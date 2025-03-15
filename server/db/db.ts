@@ -2,10 +2,11 @@ import 'dotenv/config'
 import postgres from 'postgres'
 
 export const sql = postgres(process.env.discoveryDbUrl || '', {
+  transform: postgres.camel,
   // prepare: false,
-  // debug: (_conn, query, args) => {
-  //   console.log(query.replaceAll(/\s+/g, ' '), args)
-  // },
+  debug: (_conn, query, args) => {
+    console.log(query.replaceAll(/\s+/g, ' '), args)
+  },
   types: {
     // many columns are timestamp without time zone
     // which is bad because if developer machine has a timezone set

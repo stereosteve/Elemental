@@ -38,16 +38,18 @@ export async function queryPlaylists({ ids, userId, myId }: PlaylistQuery) {
   order by playlists.created_at desc
   `
 
+  console.log(playlists[0])
+
   // attach tracks
   {
     const trackIds = playlists.flatMap((p) =>
-      p.playlist_contents.track_ids.map((t) => t.track)
+      p.playlistContents.trackIds.map((t) => t.track)
     )
     const tracks = await queryTracks({ ids: trackIds })
     const tracksById = keyBy(tracks, 'id')
 
     for (const playlist of playlists) {
-      playlist.tracks = playlist.playlist_contents.track_ids
+      playlist.tracks = playlist.playlistContents.trackIds
         .map((t) => tracksById[t.track])
         .filter(Boolean)
     }

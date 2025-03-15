@@ -22,7 +22,7 @@ export default function Feed() {
       },
       initialPageParam: '',
       getNextPageParam: (lastPage) => {
-        return lastPage[lastPage.length - 1].created_at
+        return lastPage[lastPage.length - 1].createdAt
       },
       enabled: !!myHandle,
     })
@@ -44,7 +44,7 @@ export default function Feed() {
       <h1 className="text-2xl font-bold py-4">Feed</h1>
 
       {feed.map((stub) => (
-        <div key={stub.created_at} className="">
+        <div key={stub.createdAt} className="">
           {stub.track && <TrackTile track={stub.track} djContext={djContext} />}
           {stub.playlist && (
             <PlaylistTile playlist={stub.playlist} djContext={djContext} />

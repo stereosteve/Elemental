@@ -10,6 +10,9 @@ type UserQuery = {
 }
 
 export async function queryUsers({ handle, ids, q, limit, myId }: UserQuery) {
+  if (ids?.length && ids[0] == undefined) {
+    throw new Error(`bad id`)
+  }
   const users: UserRow[] = await sql`
   select
     'user' as "type",

@@ -38,7 +38,7 @@ export async function knownRepostersBulk({ myId, isTrack, ids }: Args) {
     group by 1
   `
 
-  const userIds = rows.flatMap((r) => r.user_ids)
+  const userIds = rows.flatMap((r) => r.userIds)
 
   // todo: should we pass myId here?  seems kinda silly, but might need it for a popover card
   const users = await queryUsers({ ids: userIds })
@@ -46,7 +46,7 @@ export async function knownRepostersBulk({ myId, isTrack, ids }: Args) {
   const usersById = keyBy(users, 'id')
   const byTrackId: Record<number, UserRow[]> = {}
   for (const row of rows) {
-    byTrackId[row.track_id] = row.user_ids
+    byTrackId[row.trackId] = row.userIds
       .map((id: number) => usersById[id])
       .filter(Boolean)
   }

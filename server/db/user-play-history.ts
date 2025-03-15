@@ -27,7 +27,7 @@ export async function queryPlayHistory({ userId, before, myId }: Args) {
   // remove entries if same track ID + timestamp
   const seen = new Set()
   stubs = stubs.filter((stub) => {
-    const k = `${stub.obj_id}:${stub.created_at}`
+    const k = `${stub.objId}:${stub.createdAt}`
     const ok = !seen.has(k)
     seen.add(k)
     return ok

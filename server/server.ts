@@ -156,11 +156,11 @@ async function resolveHandle(handle: string) {
   if (!handle) return
   if (_resolveUserCache[handle]) return _resolveUserCache[handle]
   const users =
-    await sql`select user_id from users where handle_lc = ${handle.toLowerCase()}`
+    await sql`select user_id from users where handle_lc = ${handle.toLowerCase()}`.values()
   if (!users.length) return
-  const { user_id } = users[0]
-  _resolveUserCache[handle] = user_id
-  return user_id
+  const [userId] = users[0]
+  _resolveUserCache[handle] = userId
+  return userId
 }
 
 const port = 4201

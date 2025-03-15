@@ -8,8 +8,8 @@ export type PlaylistRow = {
   img: string
   createdAt: string
 
-  playlist_contents: {
-    track_ids: Array<{
+  playlistContents: {
+    trackIds: Array<{
       time: number
       track: number
     }>
