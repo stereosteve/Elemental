@@ -20,5 +20,11 @@ export const sql = postgres(process.env.discoveryDbUrl || '', {
       serialize: (v: string) => v,
       parse: (v: string) => new Date(Date.parse(v + 'Z')),
     },
+    bigint: {
+      to: 20,
+      from: [20],
+      serialize: (x: any) => x.toString(),
+      parse: (x: any) => +x,
+    },
   },
 })

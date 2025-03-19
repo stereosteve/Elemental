@@ -10,9 +10,17 @@ type PlaylistQuery = {
   ids?: number[]
   userId?: number
   myId?: number
+  whereRaw?: string
+  limit?: number
 }
 
-export async function queryPlaylists({ ids, userId, myId }: PlaylistQuery) {
+export async function queryPlaylists({
+  ids,
+  userId,
+  myId,
+  whereRaw,
+  limit,
+}: PlaylistQuery) {
   const startTime = performance.now()
   const playlists: PlaylistRow[] = await sql`
   select
@@ -35,7 +43,9 @@ export async function queryPlaylists({ ids, userId, myId }: PlaylistQuery) {
     AND is_private = false
     ${userId ? sql`AND playlist_owner_id = ${userId}` : sql``}
     ${ids ? sql`AND playlist_id in ${sql(ids)}` : sql``}
+    ${whereRaw ? sql`${whereRaw}` : sql``}
   order by playlists.created_at desc
+  ${limit ? sql`LIMIT ${limit}` : sql``}
   `
 
   console.log(playlists[0])

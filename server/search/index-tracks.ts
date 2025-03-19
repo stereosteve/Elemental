@@ -79,11 +79,10 @@ export async function createIndex(name: string, drop: boolean) {
 }
 
 async function seedTracks() {
-  console.log('____________ SEED TRACKS ______________ ')
   const indexName = 'tracks'
   await createIndex(indexName, true)
 
-  const rows = await sql`
+  await sql`
   select
       'track' as "type",
       track_id as "id",
@@ -124,30 +123,19 @@ async function seedTracks() {
       and is_delete = false
       and tracks.is_available = true
       and stem_of is null
-    -- limit 1000
-  `
 
-  // for (const row of rows) {
-  //   console.log(row)
-  //   await client.index({
-  //     index: 'tracks',
-  //     id: row.id,
-  //     body: row,
-  //   })
-  // }
-
-  // console.log(rows)
-
-  await client.helpers.bulk({
-    index: indexName,
-    datasource: rows,
-    onDocument(doc) {
-      // console.log(doc)
-      return { index: { _index: indexName, _id: `track:${doc!.id}` } }
-    },
-    onDrop(doc) {
-      console.warn('failed to index', doc)
-    },
+  `.cursor(10000, async (rows) => {
+    await client.helpers.bulk({
+      index: indexName,
+      datasource: rows,
+      onDocument(doc) {
+        // console.log(doc)
+        return { index: { _index: indexName, _id: `track:${doc!.id}` } }
+      },
+      onDrop(doc) {
+        console.warn('failed to index', doc)
+      },
+    })
   })
 }
 
