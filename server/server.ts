@@ -6,7 +6,7 @@ import { queryComments } from './db/query-comments'
 import { feed } from './db/query-feed'
 import { queryPlaylists } from './db/query-playlists'
 import { queryTracks } from './db/query-tracks'
-import { queryUsers } from './db/query-users'
+import { queryUsers, UserQueryParser } from './db/query-users'
 import { genreArtists } from './db/top-genre-artists'
 import { fauxTrending } from './db/top-tracks'
 import { userReposts } from './db/user-reposts'
@@ -16,6 +16,7 @@ import { queryMutuals } from './db/query-mutuals'
 import { readFile } from 'fs/promises'
 import { queryPlayHistory } from './db/user-play-history'
 import searchRoutes from './server_search'
+import { validator } from 'hono/validator'
 
 const app = new Hono()
 
@@ -23,13 +24,16 @@ app.use(logger())
 
 app.route('', searchRoutes)
 
-app.get('/api/users', async (c) => {
-  const ids = c.req.queries('id')
-  const q = c.req.query('q')
-  const limit = c.req.query('limit') || '100'
-  const users = await queryUsers({ ids, q, limit })
-  return c.json(users)
-})
+app.get(
+  '/api/users',
+  validator('query', (value) => UserQueryParser.parse(value)),
+  async (c) => {
+    const query = c.req.valid('query')
+    query.limit ||= 100
+    const users = await queryUsers(query)
+    return c.json(users)
+  }
+)
 
 app.get('/api/users/:handle', async (c) => {
   const myId = await getMyId(c)

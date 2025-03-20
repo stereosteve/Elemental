@@ -1,18 +1,27 @@
 import { UserRow } from '@/types/user-row'
 import { sql } from './db'
+import { z } from 'zod'
 
-type UserQuery = {
-  q?: string
-  handle?: string
-  ids?: number[] | string[]
-  limit?: string
-  myId?: number
-}
+export const UserQueryParser = z.object({
+  handle: z.string().optional(),
+  ids: z.array(z.number()).optional(),
+  myId: z.coerce.number().optional(),
 
-export async function queryUsers({ handle, ids, q, limit, myId }: UserQuery) {
+  limit: z.coerce.number().optional(),
+})
+
+export type UserQueryParser = z.infer<typeof UserQueryParser>
+
+export async function queryUsers({
+  handle,
+  ids,
+  myId,
+  limit,
+}: UserQueryParser) {
   if (ids?.length && ids[0] == undefined) {
     throw new Error(`bad id`)
   }
+
   const users: UserRow[] = await sql`
   select
     'user' as "type",
@@ -41,7 +50,6 @@ export async function queryUsers({ handle, ids, q, limit, myId }: UserQuery) {
     1=1
     ${ids ? sql`AND user_id in ${sql(ids)}` : sql``}
     ${handle ? sql`AND handle_lc = ${handle.toLowerCase()}` : sql``}
-    ${q ? sql`AND handle_lc like ${q.toLowerCase()} || '%'` : sql``}
   order by follower_count desc
   ${limit ? sql`LIMIT ${limit}` : sql``}
   ;
