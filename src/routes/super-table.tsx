@@ -97,6 +97,17 @@ export default function SuperTable() {
 
         <div className="flex items-center space-x-2">
           <Checkbox
+            id="download"
+            checked={searchParams.get('download') == 'true'}
+            onCheckedChange={() => queryToggle('download', 'true')}
+          />
+          <label htmlFor="download" className="text-sm font-medium">
+            Download
+          </label>
+        </div>
+
+        <div className="flex items-center space-x-2">
+          <Checkbox
             id="remix"
             checked={searchParams.get('remix') == 'true'}
             onCheckedChange={() => queryToggle('remix', 'true')}

@@ -16,6 +16,36 @@ const FIELD_MAPPING: Record<string, string> = {
   user_location: 'user.location.keyword',
 }
 
+app.get('/api/suggest', async (c) => {
+  let q = c.req.query('q')
+  if (!q) return c.json([])
+
+  q = q.toLowerCase()
+
+  const [tracks, users, playlists] = await Promise.all(
+    ['tracks', 'users', 'playlists'].map((index) => {
+      // todo: we'll probably just want separate dsl for each collection
+      const sortField = index == 'users' ? 'followerCount' : 'repostCount'
+      return client
+        .search({
+          index,
+          body: {
+            query: buildQueryContainer(c),
+            size: 5,
+            sort: [{ [sortField]: 'desc' }],
+          },
+        })
+        .then((r) => r.body.hits.hits.map((h) => h._source))
+    })
+  )
+
+  return c.json({
+    tracks,
+    users,
+    playlists,
+  })
+})
+
 app.get('/api/search', async (c) => {
   const from = parseInt(c.req.query('from') || '0')
 
@@ -100,6 +130,14 @@ function buildQueryContainer(c: Context, omitFilter?: string) {
   if (c.req.query('remix') == 'true') {
     filter.push({
       exists: { field: 'remixOf' },
+    })
+  }
+
+  if (c.req.query('download') == 'true') {
+    filter.push({
+      term: {
+        isDownloadable: 'true',
+      },
     })
   }
 

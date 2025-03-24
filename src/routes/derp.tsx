@@ -1,6 +1,9 @@
+import { UserSearch } from '@/components/user-search'
+
 export function Derp() {
   return (
-    <div>
+    <div className="p-12">
+      <UserSearch onSelect={console.log} />
       <GradientImageCard />
     </div>
   )

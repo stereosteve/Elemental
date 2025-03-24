@@ -56,7 +56,7 @@ async function indexUsers() {
       datasource: rows,
       onDocument(doc) {
         console.log(doc)
-        return { index: { _index: indexName, _id: `track:${doc!.id}` } }
+        return { index: { _index: indexName, _id: `${doc!.id}` } }
       },
       onDrop(doc) {
         console.warn('failed to index', doc)

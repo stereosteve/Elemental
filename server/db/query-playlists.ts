@@ -31,6 +31,9 @@ export async function queryPlaylists({
     playlists.created_at as "createdAt",
     coalesce(playlist_image_sizes_multihash, playlist_image_multihash) as img,
 
+    repost_count,
+    save_count,
+
     json_build_object(
       'id', u.user_id,
       'handle', u.handle,
@@ -38,6 +41,7 @@ export async function queryPlaylists({
     ) as user
   from playlists
   join users u on playlist_owner_id = user_id
+  join aggregate_playlist using (playlist_id)
   where
     is_delete = false
     AND is_private = false

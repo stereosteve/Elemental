@@ -28,7 +28,7 @@ export async function createIndex(name: string, drop: boolean) {
         },
       },
       mappings: {
-        dynamic: 'false',
+        dynamic: 'true',
         properties: {
           bpm: {
             type: 'float',
@@ -90,6 +90,7 @@ async function seedTracks() {
       coalesce(cover_art_sizes, cover_art) as img,
       genre,
       tags,
+      mood,
       coalesce(release_date, tracks.created_at) as "releaseDate",
       duration,
       bpm,
@@ -97,6 +98,8 @@ async function seedTracks() {
 
       -- download_conditions,
       stream_conditions as "streamConditions",
+      is_downloadable,
+      download_conditions,
       remix_of as "remixOf",
       stem_of as "stemOf",
 
@@ -118,8 +121,7 @@ async function seedTracks() {
       join aggregate_track aggt using(track_id)
       join users on owner_id = user_id
       join aggregate_user aggu using (user_id)
-    where follower_count > 5
-      and is_unlisted = false
+    where is_unlisted = false
       and is_delete = false
       and tracks.is_available = true
       and stem_of is null
@@ -130,7 +132,7 @@ async function seedTracks() {
       datasource: rows,
       onDocument(doc) {
         // console.log(doc)
-        return { index: { _index: indexName, _id: `track:${doc!.id}` } }
+        return { index: { _index: indexName, _id: doc!.id } }
       },
       onDrop(doc) {
         console.warn('failed to index', doc)
